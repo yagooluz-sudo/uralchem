@@ -1741,7 +1741,7 @@ a.kpi-link:hover { background: rgba(184,92,26,0.06); }
           type="text"
           id="city-input"
           list="cities-datalist"
-          placeholder="São Paulo - SP"
+          placeholder="Ibaté - SP"
           autocomplete="off"
           class="wx-search"
           onchange="loadWeatherByCity()"
@@ -1846,6 +1846,7 @@ a.kpi-link:hover { background: rgba(184,92,26,0.06); }
         <option value="Lages - SC">
         <option value="Caçador - SC">
         <option value="Joinville - SC">
+        <option value="Ibaté - SP">
         <option value="São Paulo - SP">
         <option value="Ribeirão Preto - SP">
         <option value="Campinas - SP">
@@ -1891,6 +1892,7 @@ a.kpi-link:hover { background: rgba(184,92,26,0.06); }
       <a class="news-portal-link" href="https://noticiasagricolas.com.br" target="_blank">Notícias Agrícolas ↗</a>
       <a class="news-portal-link" href="https://www.canalrural.com.br" target="_blank">Canal Rural ↗</a>
       <a class="news-portal-link" href="https://globorural.globo.com" target="_blank">Globo Rural ↗</a>
+      <a class="news-portal-link" href="https://www.reuters.com/markets/commodities/" target="_blank">Reuters ↗</a>
     </div>
   </div>
 
@@ -3218,22 +3220,33 @@ function timeAgo(dateStr) {
 }
 
 async function fetchRSS(rssUrl) {
-  // 1) allorigins JSON API — most reliable (returns { contents, status })
+  const enc = encodeURIComponent(rssUrl);
+  // 1) allorigins JSON API (returns { contents })
   try {
-    const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`, { signal: AbortSignal.timeout(12000) });
+    const r = await fetch(`https://api.allorigins.win/get?url=${enc}`, { signal: AbortSignal.timeout(8000) });
     if (r.ok) {
       const json = await r.json();
       if (json?.contents && (json.contents.includes('<item>') || json.contents.includes('<item '))) return json.contents;
     }
   } catch(_) {}
-  // 2) allorigins raw fallback
+  // 2) allorigins raw
   try {
-    const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`, { signal: AbortSignal.timeout(10000) });
+    const r = await fetch(`https://api.allorigins.win/raw?url=${enc}`, { signal: AbortSignal.timeout(8000) });
     if (r.ok) { const t = await r.text(); if (t.includes('<item>') || t.includes('<item ')) return t; }
   } catch(_) {}
-  // 3) corsproxy.io fallback
+  // 3) corsproxy.io
   try {
-    const r = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(rssUrl)}`, { signal: AbortSignal.timeout(10000) });
+    const r = await fetch(`https://corsproxy.io/?url=${enc}`, { signal: AbortSignal.timeout(8000) });
+    if (r.ok) { const t = await r.text(); if (t.includes('<item>') || t.includes('<item ')) return t; }
+  } catch(_) {}
+  // 4) codetabs proxy
+  try {
+    const r = await fetch(`https://api.codetabs.com/v1/proxy?quest=${enc}`, { signal: AbortSignal.timeout(8000) });
+    if (r.ok) { const t = await r.text(); if (t.includes('<item>') || t.includes('<item ')) return t; }
+  } catch(_) {}
+  // 5) thingproxy
+  try {
+    const r = await fetch(`https://thingproxy.freeboard.io/fetch/${rssUrl}`, { signal: AbortSignal.timeout(8000) });
     if (r.ok) { const t = await r.text(); if (t.includes('<item>') || t.includes('<item ')) return t; }
   } catch(_) {}
   return null;
@@ -3330,21 +3343,21 @@ async function carregarNoticias() {
   const feedEl = document.getElementById('news-feed');
   feedEl.innerHTML = '<div class="alert-content" style="font-size:11px;color:var(--muted)">Carregando notícias...</div>';
 
-  // Cada portal tem: URL direta primeiro, depois Google News site: como fallback
+  // Cada portal: URL direta primeiro, depois Google News site: como fallback
   const portais = [
     {
       name: 'Not. Agrícolas', color: '#3a8a2e',
       urls: [
         'https://www.noticiasagricolas.com.br/rss.xml',
         'https://www.noticiasagricolas.com.br/feed/',
-        'https://news.google.com/rss/search?q=site:noticiasagricolas.com.br&hl=pt-BR&gl=BR&ceid=BR:pt-419',
+        'https://news.google.com/rss/search?q=site:noticiasagricolas.com.br+agronegocio&hl=pt-BR&gl=BR&ceid=BR:pt-419',
       ],
     },
     {
       name: 'Canal Rural', color: '#c47c08',
       urls: [
         'https://www.canalrural.com.br/feed/',
-        'https://news.google.com/rss/search?q=site:canalrural.com.br+agronegocio&hl=pt-BR&gl=BR&ceid=BR:pt-419',
+        'https://news.google.com/rss/search?q=site:canalrural.com.br+agropecuaria&hl=pt-BR&gl=BR&ceid=BR:pt-419',
       ],
     },
     {
@@ -3352,12 +3365,19 @@ async function carregarNoticias() {
       urls: [
         'https://globorural.globo.com/rss/',
         'https://rss.globo.com/globo_rural.xml',
-        'https://news.google.com/rss/search?q=site:globorural.globo.com+agropecuaria&hl=pt-BR&gl=BR&ceid=BR:pt-419',
+        'https://news.google.com/rss/search?q=site:globorural.globo.com+agricultura&hl=pt-BR&gl=BR&ceid=BR:pt-419',
+      ],
+    },
+    {
+      name: 'Reuters Agro', color: '#cc1a1a',
+      urls: [
+        'https://feeds.reuters.com/reuters/commoditiesNews',
+        'https://news.google.com/rss/search?q=reuters+agronegocio+soja+milho+boi&hl=pt-BR&gl=BR&ceid=BR:pt-419',
       ],
     },
   ];
 
-  // Loop sequencial por portal — sem Promise.all, sem setTimeout
+  // Loop sequencial por portal
   const allItems = [];
   for (const p of portais) {
     let got = false;
@@ -3366,7 +3386,6 @@ async function carregarNoticias() {
       try {
         const text = await fetchRSS(url);
         if (text) {
-          // Para Google News, força nome e cor do portal (ignora <source> do XML)
           const isGN = url.includes('news.google.com');
           const items = isGN
             ? parseGoogleNewsItems(text, 5).map(i => ({ ...i, source: p.name, color: p.color }))
@@ -3375,6 +3394,18 @@ async function carregarNoticias() {
         }
       } catch(_) {}
     }
+  }
+
+  // Fallback global: busca ampla no Google News se nenhum portal respondeu
+  if (allItems.length === 0) {
+    try {
+      const fallbackUrl = 'https://news.google.com/rss/search?q=agroneg%C3%B3cio+soja+milho+boi+Brasil&hl=pt-BR&gl=BR&ceid=BR:pt-419';
+      const text = await fetchRSS(fallbackUrl);
+      if (text) {
+        const items = parseGoogleNewsItems(text, 15);
+        if (items.length > 0) allItems.push(...items);
+      }
+    } catch(_) {}
   }
 
   if (allItems.length > 0) {
@@ -3386,7 +3417,7 @@ async function carregarNoticias() {
 
 // Função para buscar clima por cidade selecionada
 function cityInputToQuery(val) {
-  if (!val) return 'Sao Paulo,BR';
+  if (!val) return 'Ibate,BR';
   const cityName = val.split(' - ')[0].trim();
   return cityName.normalize('NFD').replace(/[\u0300-\u036f]/g,'') + ',BR';
 }
@@ -3628,7 +3659,7 @@ function wxMainTip(temp, humidity, wind, condMain) {
 function loadWeatherByCity() {
   const input    = document.getElementById('city-input');
   const rawVal   = input ? input.value.trim() : '';
-  const cityQ    = cityInputToQuery(rawVal || 'São Paulo - SP');
+  const cityQ    = cityInputToQuery(rawVal || 'Ibaté - SP');
   const apiKey   = 'bbf01bd08dea499c87355686dc1fa2b6';
   const nowH     = new Date().getHours() + new Date().getMinutes() / 60;
 
