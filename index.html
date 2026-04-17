@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgroMapa — Enciclopédia de Culturas Brasileiras</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>AgroMapa — Sobre Culturas Brasileiras</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root {
   --bg: #f5ede0;
@@ -42,45 +43,63 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Libre Baskerville', Georgia, serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 12% 18%, rgba(184,92,26,0.13) 0%, transparent 48%),
+    radial-gradient(ellipse at 88% 80%, rgba(196,124,8,0.07) 0%, transparent 48%),
+    radial-gradient(ellipse at 72% 8%,  rgba(196,124,8,0.08) 0%, transparent 38%);
+  background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23f5ede0'/%3E%3Ccircle cx='1' cy='1' r='0.5' fill='%23e8d8c4' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* GLASS — reutilizável */
+.glass {
+  background: rgba(255,255,255,0.30);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: none;
+  box-shadow: 0 4px 24px rgba(90,60,20,0.07), inset 0 1px 0 rgba(255,255,255,0.55);
 }
 
 /* HEADER */
 header {
-  padding: 14px 32px;
+  padding: 16px 40px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  gap: 16px;
-  background: var(--surface);
+  gap: 20px;
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.45);
+  box-shadow: 0 1px 0 rgba(184,92,26,0.08), 0 4px 20px rgba(90,60,20,0.06);
 }
 
 .logo {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   font-weight: 900;
-  font-size: 24px;
+  font-size: 22px;
   font-style: italic;
   letter-spacing: -0.5px;
   color: var(--accent);
 }
 
-.logo span { color: var(--text); font-weight: 400; }
+.logo span { color: var(--text); font-weight: 500; }
 
 .header-sub {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--muted);
   border-left: 1px solid var(--border2);
-  padding-left: 16px;
-  letter-spacing: 0.08em;
+  padding-left: 20px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  font-weight: 500;
 }
 
 /* LAYOUT */
@@ -103,8 +122,11 @@ header {
   display: flex;
   gap: 5px;
   padding: 8px 20px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border-bottom: 1px solid rgba(255,255,255,0.60);
+  box-shadow: 0 1px 0 rgba(90,60,20,0.06), inset 0 1px 0 rgba(255,255,255,0.80);
   align-items: center;
   flex-wrap: nowrap;
   overflow-x: auto;
@@ -125,14 +147,14 @@ header {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 10px;
+  padding: 5px 11px;
   border-radius: 20px;
   border: 1.5px solid var(--border2);
   background: transparent;
   color: var(--muted);
-  font-family: 'Libre Baskerville', serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 11px;
-  font-weight: 400;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
@@ -169,7 +191,7 @@ header {
   font-size: 11px;
   cursor: pointer;
   margin-left: 6px;
-  font-family: 'Libre Baskerville', serif;
+  font-family: 'Inter', system-ui, sans-serif;
   transition: all 0.2s;
   flex-shrink: 0;
 }
@@ -178,9 +200,9 @@ header {
 /* MAP col 1 */
 .map-panel {
   position: relative;
-  background: var(--surface);
+  background: rgba(255,255,255,0.15);
   overflow: hidden;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid rgba(255,255,255,0.35);
 }
 
 #brazil-svg {
@@ -205,16 +227,23 @@ header {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--bg);
-  border-right: 1px solid var(--border);
+  background: rgba(255,255,255,0.12);
+  border-right: 1px solid rgba(255,255,255,0.35);
 }
 
 /* STATE INFO */
 .state-header {
-  padding: 12px 18px 10px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  height: 68px;
+  padding: 0 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 /* CARDS PANEL col 3 */
@@ -222,31 +251,39 @@ header {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--bg);
+  background: transparent;
 }
 
 .cards-panel-header {
-  padding: 12px 16px 10px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  height: 68px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .state-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 17px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 2px;
+  letter-spacing: -0.2px;
 }
 
 .state-name .sub {
-  font-family: 'Libre Baskerville', serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 11px;
   font-weight: 400;
   color: var(--muted);
   display: block;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .state-cultures {
@@ -276,7 +313,7 @@ header {
 .timeline-section::-webkit-scrollbar-thumb { background: rgba(90,60,20,0.2); border-radius: 4px; }
 
 .section-title {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Inter', sans-serif;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -349,44 +386,55 @@ header {
 .detail-cards::-webkit-scrollbar-thumb { background: rgba(90,60,20,0.2); border-radius: 4px; }
 
 .detail-card {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 7px;
+  border: 1px solid rgba(255,255,255,0.55);
+  border-radius: 14px;
+  margin-bottom: 8px;
   overflow: hidden;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  background: rgba(255,255,255,0.38);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 2px 8px rgba(90,60,20,0.06), inset 0 1px 0 rgba(255,255,255,0.70);
 }
 
-.detail-card:hover { border-color: var(--border2); }
+.detail-card:hover {
+  background: rgba(255,255,255,0.55);
+  box-shadow: 0 4px 18px rgba(90,60,20,0.10), inset 0 1px 0 rgba(255,255,255,0.80);
+  transform: translateY(-1px);
+}
 
 .detail-card-header {
-  padding: 9px 11px;
+  padding: 11px 14px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--surface);
+  gap: 9px;
+  background: rgba(255,255,255,0.20);
 }
 
 .detail-card-icon {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .detail-card-name {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
   font-size: 13px;
+  letter-spacing: 0.01em;
 }
 
 .detail-card-toggle {
   margin-left: auto;
   color: var(--muted);
-  font-size: 15px;
+  font-size: 18px;
+  font-weight: 300;
   transition: transform 0.2s;
+  line-height: 1;
 }
 
 .detail-card-body {
   display: none;
-  padding: 10px 11px;
+  padding: 12px 14px;
   border-top: 1px solid var(--border);
   background: var(--bg);
   font-size: 11px;
@@ -471,22 +519,39 @@ header {
 /* HEADER NAV */
 .header-nav {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   margin-left: auto;
 }
 .nav-btn {
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 1.5px solid var(--border2);
-  background: transparent;
+  padding: 7px 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   color: var(--muted);
-  font-family: 'Libre Baskerville', serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
   transition: all .2s;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 4px rgba(90,60,20,0.08), inset 0 1px 0 rgba(255,255,255,0.55);
 }
-.nav-btn:hover { color: var(--text); border-color: var(--text); }
-.nav-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.nav-btn:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.40);
+  border-color: rgba(255,255,255,0.65);
+  box-shadow: 0 2px 10px rgba(90,60,20,0.10), inset 0 1px 0 rgba(255,255,255,0.65);
+}
+.nav-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 3px 12px rgba(184,92,26,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
 
 /* FULL PANELS (calculadora / comparativo) */
 .fp-inner {
@@ -504,10 +569,11 @@ header {
   padding: 32px 36px;
 }
 .fp-title {
-  font-family: 'Playfair Display', serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: var(--text);
+  letter-spacing: -0.3px;
   margin-bottom: 6px;
 }
 .fp-sub {
@@ -530,10 +596,10 @@ header {
   width: 100%;
   padding: 9px 12px;
   border: 1px solid var(--border2);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Libre Baskerville', serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 13px;
   outline: none;
   transition: border-color .2s;
@@ -573,7 +639,7 @@ header {
 .calc-product-name { font-size: 13px; font-weight: 500; color: var(--text); }
 .calc-product-code { font-size: 10px; color: var(--muted); margin-top: 2px; }
 .calc-product-ton {
-  font-family: 'Playfair Display', serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: var(--accent);
@@ -590,9 +656,12 @@ header {
   margin: 16px 0;
 }
 .calc-pitch {
-  background: #fff8f0;
-  border: 1px solid rgba(184,92,26,0.2);
-  border-radius: 12px;
+  background: rgba(255,248,240,0.72);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(184,92,26,0.18);
+  box-shadow: 0 2px 12px rgba(184,92,26,0.08), inset 0 1px 0 rgba(255,255,255,0.80);
+  border-radius: 14px;
   padding: 16px 20px;
   font-size: 13px;
   line-height: 1.8;
@@ -628,8 +697,9 @@ header {
   border: 1px solid transparent;
   background: transparent;
   color: var(--muted);
-  font-family: 'Libre Baskerville', serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
   transition: all .2s;
 }
@@ -666,7 +736,7 @@ header {
 .comp-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
 .comp-card-label.our { color: var(--accent); }
 .comp-card-label.them { color: var(--muted); }
-.comp-card-name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--text); }
+.comp-card-name { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; font-weight: 700; color: var(--text); }
 .comp-card-body { padding: 16px 18px; }
 .comp-row {
   display: flex;
@@ -714,20 +784,684 @@ header {
 }
 .comp-cultura-row:last-child { border-bottom: none; }
 .comp-pitch-box {
-  background: #fff8f0;
-  border: 1px solid rgba(184,92,26,0.2);
-  border-radius: 12px;
+  background: rgba(255,248,240,0.72);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(184,92,26,0.18);
+  box-shadow: 0 2px 12px rgba(184,92,26,0.08), inset 0 1px 0 rgba(255,255,255,0.80);
+  border-radius: 14px;
   padding: 18px 22px;
 }
 .comp-pitch-box .pitch-label { margin-bottom: 10px; }
 .comp-pitch-text { font-size: 13px; line-height: 1.8; color: var(--text); font-style: italic; }
 
+/* PRODUTOS PANEL */
+.produtos-header {
+  padding: 32px 40px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 1px 0 rgba(90,60,20,0.06), inset 0 1px 0 rgba(255,255,255,0.80);
+}
+.produtos-body {
+  padding: 24px 40px 40px;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+.produtos-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.prod-filter-btn {
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border2);
+  background: rgba(255,255,255,0.30);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--muted);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: 0 1px 4px rgba(90,60,20,0.06), inset 0 1px 0 rgba(255,255,255,0.55);
+}
+.prod-filter-btn:hover { color: var(--text); background: rgba(255,255,255,0.55); }
+.prod-filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 2px 8px rgba(184,92,26,0.25); }
+.produtos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+.prod-card {
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow: 0 2px 12px rgba(90,60,20,0.07), inset 0 1px 0 rgba(255,255,255,0.80);
+  border-radius: 16px;
+  padding: 18px 20px;
+  transition: box-shadow 0.2s, transform 0.15s, background 0.2s;
+}
+.prod-card:hover {
+  box-shadow: 0 6px 24px rgba(90,60,20,0.12), inset 0 1px 0 rgba(255,255,255,0.90);
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.70);
+}
+.prod-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.prod-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.2px;
+  line-height: 1.3;
+}
+.prod-code {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 2px;
+  font-family: 'Inter', monospace;
+  letter-spacing: 0.04em;
+}
+.prod-formula-badge {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  box-shadow: 0 1px 4px rgba(184,92,26,0.25);
+  flex-shrink: 0;
+}
+.prod-desc {
+  font-size: 12px;
+  color: #5a3e28;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.prod-indicado-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.prod-cultures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.prod-culture-tag {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.prod-diferencial {
+  font-size: 11px;
+  color: #5a3e28;
+  background: rgba(184,92,26,0.06);
+  border-left: 2px solid var(--accent);
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+/* KPIs SECTION */
+.kpis-section {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.45);
+  box-shadow: 0 4px 24px rgba(90,60,20,0.06), inset 0 1px 0 rgba(255,255,255,0.55);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 32px 0;
+}
+
+.kpi-card {
+  background: transparent;
+  border-right: 1px solid rgba(255,255,255,0.35);
+  border-radius: 0;
+  padding: 22px 28px;
+  text-align: left;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.kpi-card:last-child { border-right: none; }
+
+.kpi-card:hover { background: rgba(255,255,255,0.20); }
+
+a.kpi-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+}
+a.kpi-link:hover { background: rgba(184,92,26,0.06); }
+
+.kpi-source {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  left: 32px;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+.kpi-card:hover::before { width: calc(100% - 64px); }
+
+.kpi-title {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.kpi-value {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* DASHBOARD ROW — chart full-width no topo, clima+notícias abaixo */
+.dashboard-row {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 20px;
+  padding: 20px 32px 28px;
+  background: transparent;
+  align-items: stretch;
+}
+
+.alert-card {
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.45);
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 24px rgba(90,60,20,0.06), inset 0 1px 0 rgba(255,255,255,0.55);
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+.alert-card:hover {
+  background: rgba(255,255,255,0.38);
+  box-shadow: 0 8px 32px rgba(90,60,20,0.10), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+.alert-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+
+.alert-content {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* NEWS FEED */
+.news-feed {
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(90,60,20,0.2) transparent;
+}
+.news-feed::-webkit-scrollbar { width: 3px; }
+.news-feed::-webkit-scrollbar-thumb { background: rgba(90,60,20,0.2); border-radius: 3px; }
+
+.news-item {
+  display: flex;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+  text-align: left;
+}
+.news-item:last-child { border-bottom: none; }
+
+.news-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 1px;
+  letter-spacing: 0.03em;
+}
+
+.news-headline {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text);
+  text-decoration: none;
+  display: block;
+  transition: color 0.15s;
+}
+.news-headline:hover { color: var(--accent); }
+
+.news-portais {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.news-portal-link {
+  font-size: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+.news-portal-link:hover { color: var(--accent); }
+
+.chart-panel {
+  grid-column: 1 / -1;
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: none;
+  border-radius: 12px;
+  padding: 18px 24px;
+  box-shadow: 0 4px 24px rgba(90,60,20,0.06), inset 0 1px 0 rgba(255,255,255,0.55);
+}
+
+.chart-section-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.chart-section-sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.chart-insight {
+  margin-top: 10px;
+  padding: 9px 12px;
+  background: rgba(255,255,255,0.38);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.55);
+  border-radius: 10px;
+  font-size: 11px;
+  color: #5a3e28;
+  line-height: 1.6;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.70);
+}
+.chart-insight strong { color: var(--accent); }
+
+/* WEATHER — Samsung style */
+.weather-card-wrap {
+  overflow: hidden;
+  position: relative;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+}
+
+/* Scene — full-bleed top section */
+.wx-scene {
+  position: relative;
+  width: 100%;
+  height: 202px;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: background 0s;
+  background: url('scene-midday.jpg') center/cover no-repeat;
+}
+/* Time-of-day photo backgrounds */
+.wx-scene.wx-dawn         { background: url('scene-dawn.jpg') center/cover no-repeat; }
+.wx-scene.wx-morning      { background: url('scene-morning.jpg') center/cover no-repeat; }
+.wx-scene.wx-midday       { background: url('scene-midday.jpg') center/cover no-repeat; }
+.wx-scene.wx-afternoon    { background: url('scene-afternoon.jpg') center/cover no-repeat; }
+.wx-scene.wx-sunset       { background: url('scene-sunset.jpg') center/cover no-repeat; }
+.wx-scene.wx-dusk         { background: url('scene-dusk.jpg') center/cover no-repeat; }
+.wx-scene.wx-night        { background: url('scene-night.jpg') center/cover no-repeat; }
+/* Weather overrides */
+.wx-scene.wx-cloudy       { background: url('scene-cloudy.jpg') center/cover no-repeat; }
+.wx-scene.wx-rainy        { background: url('scene-rainy.jpg') center/cover no-repeat; }
+.wx-scene.wx-storm        { background: url('scene-storm.jpg') center/cover no-repeat; }
+/* Night + weather variants */
+.wx-scene.wx-night-cloudy { background: url('scene-night-cloudy.jpg') center/cover no-repeat; }
+.wx-scene.wx-night-rainy  { background: url('scene-night-rainy.jpg') center/cover no-repeat; }
+.wx-scene.wx-night-storm  { background: url('scene-night-storm.jpg') center/cover no-repeat; }
+
+/* Hide animated sky elements — photos provide sun/moon/stars/clouds */
+.wx-sun, .wx-moon, .wx-stars, .wx-cloud { display: none !important; }
+
+/* Animated sun — position set by JS */
+.wx-sun {
+  position: absolute;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff7a0 20%, #ffd030 55%, #ffaa00 100%);
+  box-shadow: 0 0 30px 14px rgba(255,210,0,0.5), 0 0 60px 30px rgba(255,180,0,0.2);
+  top: 18px; left: 50%;
+  transform: translateX(-50%);
+  animation: wxSunFloat 7s ease-in-out infinite;
+  transition: opacity 1.2s, top 2s ease, left 2s ease, background 1.5s, box-shadow 1.5s;
+}
+@keyframes wxSunFloat {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.04); }
+}
+
+/* Sun rays */
+.wx-sun::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 90px; height: 90px;
+  margin: -45px 0 0 -45px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,220,60,0.25);
+  animation: wxSunRay 4s linear infinite;
+}
+@keyframes wxSunRay {
+  from { transform: scale(0.8); opacity: 0.6; }
+  to   { transform: scale(1.6); opacity: 0; }
+}
+
+/* Moon (night) */
+.wx-moon {
+  position: absolute;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: #e8e0c0;
+  box-shadow: 0 0 20px 8px rgba(220,210,160,0.4);
+  top: 22px; right: 32px;
+  opacity: 0;
+  transition: opacity 1s;
+}
+.wx-moon::before {
+  content: '';
+  position: absolute;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: #1a2a50;
+  top: -5px; left: 10px;
+}
+
+/* Clouds */
+.wx-cloud {
+  position: absolute;
+  background: rgba(255,255,255,0.90);
+  border-radius: 50px;
+  transition: opacity 1s;
+}
+.wx-cloud::before,.wx-cloud::after {
+  content:''; position:absolute;
+  background: rgba(255,255,255,0.90);
+  border-radius:50%;
+}
+.wx-cloud-a { width:70px; height:22px; top:22px; left:-15px; animation: wxCloud1 16s linear infinite; }
+.wx-cloud-a::before { width:30px;height:30px;top:-15px;left:10px; }
+.wx-cloud-a::after  { width:22px;height:22px;top:-10px;left:32px; }
+.wx-cloud-b { width:50px; height:16px; top:46px; left:30%; animation: wxCloud2 22s linear infinite; opacity:0.7; }
+.wx-cloud-b::before { width:20px;height:20px;top:-12px;left:8px; }
+.wx-cloud-b::after  { width:16px;height:16px;top:-8px;left:24px; }
+@keyframes wxCloud1 { 0%{transform:translateX(-90px)} 100%{transform:translateX(110%)} }
+@keyframes wxCloud2 { 0%{transform:translateX(-60px)} 100%{transform:translateX(110%)} }
+
+/* Rain */
+.wx-rain {
+  position:absolute; top:0;left:0;right:0;bottom:30px;
+  overflow:hidden; pointer-events:none; opacity:0; transition:opacity 1s;
+}
+.wx-rain::before {
+  content:''; position:absolute; top:-20px;left:0;right:0;bottom:0;
+  background-image: repeating-linear-gradient(175deg,transparent 0,transparent 5px,rgba(160,210,255,0.6) 5px,rgba(160,210,255,0.6) 6px);
+  background-size:16px 28px;
+  animation: wxRainFall 0.5s linear infinite;
+}
+@keyframes wxRainFall { 0%{transform:translateY(-28px)} 100%{transform:translateY(28px)} }
+
+/* Stars (night) */
+.wx-stars {
+  position:absolute; top:0;left:0;right:0;bottom:0;
+  opacity:0; transition:opacity 1.2s;
+  background-image:
+    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 12%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 82% 8%,  rgba(255,255,255,0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 28% 35%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(2px 2px at 60% 18%, rgba(255,255,255,0.8) 0%, transparent 100%);
+}
+
+/* Plantation landscape SVG — hidden, photos provide the landscape */
+.wx-landscape {
+  display: none;
+}
+
+/* Weather text overlay on scene */
+.wx-overlay {
+  position:absolute; top:0; bottom:0; left:0; right:0;
+  padding:0 14px 14px;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  background: linear-gradient(to top, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.05) 70%, transparent 100%);
+  color:#fff;
+}
+.wx-city-name {
+  font-size:11px; font-weight:600; letter-spacing:0.05em;
+  opacity:0.9; margin-bottom:2px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  display:flex; align-items:center; gap:4px;
+}
+.wx-big-temp {
+  font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  font-size:46px; font-weight:700; line-height:1;
+  color:#fff; text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  letter-spacing:-1px;
+}
+.wx-desc-line {
+  font-size:13px; font-weight:500; opacity:0.92;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+  margin-top:2px;
+}
+.wx-hilow {
+  font-size:11px; opacity:0.8; margin-top:3px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* Bottom content area */
+.wx-body {
+  padding: 10px 14px 12px;
+  background: transparent;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* City search */
+.wx-search {
+  width:100%;
+  padding:7px 10px;
+  border-radius:8px;
+  border:1px solid var(--border2);
+  background:rgba(255,255,255,0.6);
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  color:var(--text);
+  backdrop-filter:blur(8px);
+}
+.wx-search:focus { outline:none; border-color:var(--accent); }
+
+/* Hourly forecast */
+.wx-hourly {
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  padding:8px 0 4px;
+  border-top:1px solid rgba(90,60,20,0.1);
+}
+.wx-hourly::-webkit-scrollbar { display:none; }
+.wx-hour-item {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  min-width:40px;
+  flex-shrink:0;
+}
+.wx-hour-time {
+  font-size:9px;
+  color:var(--muted);
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:0.03em;
+}
+.wx-hour-icon { font-size:16px; line-height:1; }
+.wx-hour-temp {
+  font-size:11px;
+  font-weight:600;
+  color:var(--text);
+}
+.wx-hour-pop {
+  font-size:9px;
+  color:#4a8ac8;
+  font-weight:500;
+}
+
+/* Agro advice */
+.wx-agro-tip {
+  font-size:10px;
+  line-height:1.55;
+  padding:7px 10px;
+  background:rgba(255,255,255,0.5);
+  border-radius:7px;
+  color:var(--text);
+  border-left:3px solid var(--accent);
+}
+
+/* 5-day daily forecast */
+.wx-daily { border-top:1px solid rgba(90,60,20,0.1); padding:2px 0 0; }
+.wx-day-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:4px 0; font-size:11px;
+  border-bottom:1px solid rgba(90,60,20,0.05);
+}
+.wx-day-row:last-child { border-bottom:none; }
+.wx-day-name  { color:var(--text); font-weight:600; min-width:36px; }
+.wx-day-icon  { font-size:14px; }
+.wx-day-pop   { font-size:9px; color:#4a8ac8; min-width:32px; text-align:center; }
+.wx-day-temps { display:flex; gap:6px; align-items:center; white-space:nowrap; }
+.wx-day-hi { color:#c45e00; font-weight:700; font-size:11px; }
+.wx-day-lo { color:#4a8ac8; font-weight:400; font-size:11px; }
+
+/* Agro metrics grid */
+.wx-metrics {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:5px;
+  border-top:1px solid rgba(90,60,20,0.1);
+  padding-top:6px;
+}
+.wx-metric-item {
+  background:rgba(255,255,255,0.45);
+  border-radius:7px;
+  padding:6px 8px;
+  display:flex; flex-direction:column; gap:2px;
+}
+.wx-metric-label { font-size:8.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); font-weight:600; }
+.wx-metric-value { font-size:12px; font-weight:700; color:var(--text); line-height:1.2; }
+.wx-metric-sub   { font-size:9px; color:var(--muted); line-height:1.3; }
+.wx-metric-item.wx-good  { border-left:2.5px solid #4a9a30; }
+.wx-metric-item.wx-warn  { border-left:2.5px solid #d09020; }
+.wx-metric-item.wx-alert { border-left:2.5px solid #c42818; }
+.wx-metric-item.wx-info  { border-left:2.5px solid var(--accent); }
+
+/* Air quality span */
+#wxAQI { font-size:10px; }
+
+/* Loading/error state */
+.wx-loading {
+  padding:14px;
+  font-size:11px;
+  color:var(--muted);
+  text-align:center;
+}
+
+/* PERSONALIZATION FORM */
+.personal-form {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+.personal-form .field-group { margin-bottom: 12px; }
+
 @media (max-width: 900px) {
   /* HEADER */
-  header { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+  header { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
   .header-sub { display: none; }
   .header-nav { margin-left: 0; width: 100%; justify-content: stretch; }
   .nav-btn { flex: 1; text-align: center; font-size: 11px; padding: 7px 6px; }
+
+  /* KPIs mobile */
+  .kpis-section { grid-template-columns: 1fr 1fr; margin: 12px 16px 0; }
+  .kpi-card { border-right: none; border-bottom: 1px solid var(--border); padding: 14px 16px; }
+  .kpi-card:nth-child(odd) { border-right: 1px solid var(--border); }
+  .kpi-card:last-child { border-bottom: none; }
+
+  /* Dashboard row: empilha no mobile */
+  .dashboard-row { grid-template-columns: 1fr; padding: 16px; gap: 14px; }
+  .chart-panel { grid-column: 1; }
 
   /* CULTURE BAR */
   .culture-bar { padding: 7px 10px; }
@@ -793,13 +1527,394 @@ header {
 
 <header>
   <div class="logo">Agro<span>Mapa</span></div>
-  <div class="header-sub">Enciclopédia de Culturas Brasileiras</div>
+  <div class="header-sub">Sobre Culturas Brasileiras</div>
   <nav class="header-nav">
     <button class="nav-btn active" onclick="showView('mapa')">🗺 Mapa</button>
     <button class="nav-btn" onclick="showView('calculadora')">🧮 Calculadora</button>
     <button class="nav-btn" onclick="showView('comparativo')">⚖️ Comparativo</button>
+    <button class="nav-btn" onclick="showView('produtos')">🧪 Produtos</button>
   </nav>
 </header>
+
+<!-- KPIs SECTION -->
+<div class="kpis-section">
+  <a class="kpi-card kpi-link" href="https://www.conab.gov.br/info-agro/safras" target="_blank" title="Ver dados CONAB">
+    <div class="kpi-title">Área Plantada — Grãos</div>
+    <div class="kpi-value">~82 Mi ha</div>
+    <div class="kpi-sub">Brasil · Safra 2025/26 · <span class="kpi-source">CONAB ↗</span></div>
+  </a>
+  <a class="kpi-card kpi-link" href="https://indicadores.agricultura.gov.br/agrostat/index.htm" target="_blank" title="Ver dados AgroStat/MAPA">
+    <div class="kpi-title">Exportações do Agronegócio</div>
+    <div class="kpi-value">US$ 173 bi</div>
+    <div class="kpi-sub">Projeção 2025 · novo recorde · <span class="kpi-source">MAPA ↗</span></div>
+  </a>
+  <div class="kpi-card" id="kpi-cotacao-card">
+    <div class="kpi-title">Cotação — <span id="cotacao-nome">Soja</span> <span id="cotacao-icon">🌱</span></div>
+    <div class="kpi-value" id="kpi-preco">Carregando...</div>
+    <div class="kpi-sub" style="display:flex;align-items:center;gap:6px">
+      <span id="cotacao-unidade">sc 60kg · ref.</span>
+      <a id="cotacao-link" href="https://www.cepea.esalq.usp.br/br/indicador/soja.aspx" target="_blank"
+         style="margin-left:auto;color:var(--accent);font-size:10px;font-weight:600;text-decoration:none;white-space:nowrap">CEPEA ↗</a>
+    </div>
+    <div style="height:2px;background:var(--border);border-radius:1px;margin-top:10px;overflow:hidden">
+      <div id="cotacao-progress" style="height:100%;background:var(--accent);width:100%;transition:none"></div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-title">ROI Estimado c/ Fertiliz.</div>
+    <div class="kpi-value" id="kpi-roi">+25%</div>
+    <div class="kpi-sub">vs. adubação sem planejamento</div>
+  </div>
+</div>
+
+<!-- DASHBOARD ROW: gráfico + clima + notícias lado a lado -->
+<div class="dashboard-row">
+
+  <!-- Gráfico -->
+  <div class="chart-panel">
+    <div class="chart-section-title">Produtividade Média por Cultura</div>
+    <div class="chart-section-sub">Estimativa 2025/26 · t/ha · Fonte: CONAB. Cana em massa fresca; demais em grãos secos.</div>
+    <canvas id="produtividadeChart" style="max-height:220px"></canvas>
+    <div class="chart-insight">
+      <strong>Cana</strong> lidera em volume bruto — SP, GO, MS · <strong>Citros</strong> com alta produtividade em SP e MG · <strong>Soja e milho</strong> dominam em área no Centro-Oeste e MATOPIBA · <strong>Café</strong> concentrado em MG, ES e SP, com maior valor por tonelada
+    </div>
+  </div>
+
+  <!-- Clima -->
+  <div class="alert-card weather-card-wrap">
+
+    <!-- Samsung-style scene -->
+    <div class="wx-scene wx-sunny" id="wxScene">
+      <div class="wx-stars" id="wxStars"></div>
+      <div class="wx-sun" id="wxSun"></div>
+      <div class="wx-moon" id="wxMoon"></div>
+      <div class="wx-cloud wx-cloud-a" id="wxCloudA"></div>
+      <div class="wx-cloud wx-cloud-b" id="wxCloudB"></div>
+      <div class="wx-rain" id="wxRain"></div>
+      <!-- Plantation landscape — full colour illustration -->
+      <svg class="wx-landscape" viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hg1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="rgb(165,215,100)" stop-opacity="0"/>
+            <stop offset="32%"  stop-color="rgb(148,198,82)"  stop-opacity="0.50"/>
+            <stop offset="100%" stop-color="rgb(128,178,62)"  stop-opacity="0.72"/>
+          </linearGradient>
+          <linearGradient id="hg2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="rgb(105,172,48)"  stop-opacity="0"/>
+            <stop offset="18%"  stop-color="rgb(92,158,38)"   stop-opacity="0.62"/>
+            <stop offset="100%" stop-color="rgb(78,140,28)"   stop-opacity="0.90"/>
+          </linearGradient>
+          <linearGradient id="fldG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#62bc38"/>
+            <stop offset="55%"  stop-color="#4ea028"/>
+            <stop offset="100%" stop-color="#3a7e18"/>
+          </linearGradient>
+          <!-- Corn plant — full colour (origin at base) -->
+          <g id="corn">
+            <line x1="0" y1="0" x2="0" y2="-40" stroke="#2a7010" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M0,-40 Q-2,-47 -3,-45" stroke="#8aaa22" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M0,-40 Q2,-47  3,-45"  stroke="#8aaa22" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M0,-40 Q0,-49  0,-46"  stroke="#8aaa22" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M0,-32 Q-20,-38 -26,-32 Q-17,-27 0,-32Z" fill="#3ea020"/>
+            <path d="M0,-32 Q20,-38  26,-32 Q17,-27 0,-32Z"  fill="#3ea020"/>
+            <path d="M0,-21 Q-22,-26 -28,-19 Q-18,-15 0,-21Z" fill="#389818"/>
+            <path d="M0,-21 Q22,-26  28,-19 Q18,-15 0,-21Z"  fill="#389818"/>
+            <path d="M0,-10 Q-17,-12 -21,-8  Q-14,-5  0,-10Z" fill="#309010"/>
+            <path d="M0,-10 Q17,-12  21,-8  Q14,-5  0,-10Z"  fill="#309010"/>
+          </g>
+        </defs>
+
+        <!-- Distant hills -->
+        <path d="M0 46 Q30 28 65 42 Q100 22 140 40 Q178 26 218 42 Q256 24 296 40 Q332 28 368 38 Q385 34 400 36 L400 90 L0 90Z" fill="url(#hg1)"/>
+        <!-- Mid hills -->
+        <path d="M0 58 Q50 44 105 56 Q160 42 215 55 Q270 43 330 55 Q365 47 400 52 L400 90 L0 90Z" fill="url(#hg2)"/>
+
+        <!-- Barn (barn-red) -->
+        <rect x="18" y="50" width="22" height="20" rx="1" fill="#7a1e1e"/>
+        <path d="M17 50 L29 39 L41 50Z" fill="#5e1414"/>
+        <rect x="24" y="58" width="9" height="12" rx="1" fill="#5e1414"/>
+        <rect x="20" y="53" width="5" height="4" rx="0.5" fill="rgba(255,220,140,0.40)"/>
+        <!-- Silo -->
+        <rect x="42" y="44" width="11" height="26" rx="2" fill="#c8b470"/>
+        <path d="M41 44 Q47.5 35 54 44Z" fill="#b09848"/>
+        <line x1="41" y1="52" x2="53" y2="52" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
+        <line x1="41" y1="58" x2="53" y2="58" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
+        <line x1="41" y1="64" x2="53" y2="64" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
+
+        <!-- Foreground field -->
+        <path d="M0 68 Q80 61 170 67 Q268 59 368 65 L400 64 L400 90 L0 90Z" fill="url(#fldG)"/>
+        <path d="M0 68 Q80 61 170 67 Q268 59 368 65 L400 64 L400 70 Q368 67 268 65 Q170 71 80 67 L0 72Z" fill="rgba(100,200,55,0.18)"/>
+
+        <!-- Dirt track -->
+        <path d="M158 68 L128 90 L178 90 L168 68Z" fill="rgba(175,145,75,0.32)"/>
+
+        <!-- Crop rows -->
+        <g stroke="rgba(18,68,5,0.14)" stroke-width="0.6" fill="none">
+          <line x1="163" y1="68" x2="0"   y2="90"/><line x1="163" y1="68" x2="48"  y2="90"/>
+          <line x1="163" y1="68" x2="100" y2="90"/><line x1="163" y1="68" x2="150" y2="90"/>
+          <line x1="163" y1="68" x2="190" y2="90"/><line x1="163" y1="68" x2="245" y2="90"/>
+        </g>
+        <line x1="0" y1="72" x2="400" y2="72.5" stroke="rgba(18,68,5,0.10)" stroke-width="0.5"/>
+        <line x1="0" y1="77" x2="400" y2="77.5" stroke="rgba(18,68,5,0.08)" stroke-width="0.5"/>
+        <line x1="0" y1="82" x2="400" y2="82"   stroke="rgba(18,68,5,0.06)" stroke-width="0.5"/>
+
+        <!-- TRACTOR — John Deere green (#367C2B) -->
+        <!-- Rear wheel -->
+        <circle cx="178" cy="77" r="13" fill="#1c1c1c"/>
+        <circle cx="178" cy="77" r="9.5" fill="#252525"/>
+        <circle cx="178" cy="77" r="3.5" fill="#303030"/>
+        <g stroke="#2e2e2e" stroke-width="1.3">
+          <line x1="178" y1="64" x2="178" y2="90"/>
+          <line x1="165" y1="77" x2="191" y2="77"/>
+          <line x1="169" y1="68" x2="187" y2="86"/>
+          <line x1="187" y1="68" x2="169" y2="86"/>
+        </g>
+        <!-- Front wheel -->
+        <circle cx="212" cy="80" r="8.5" fill="#1c1c1c"/>
+        <circle cx="212" cy="80" r="5.5" fill="#252525"/>
+        <circle cx="212" cy="80" r="2"   fill="#303030"/>
+        <!-- Chassis green -->
+        <rect x="176" y="65" width="38" height="13" rx="1" fill="#367C2B"/>
+        <!-- Hood (darker green, slopes to front) -->
+        <path d="M197 65 L222 65 L220 57 L199 57Z" fill="#2d6824"/>
+        <g stroke="#245420" stroke-width="0.9">
+          <line x1="203" y1="58" x2="202" y2="64"/>
+          <line x1="209" y1="58" x2="208" y2="64"/>
+          <line x1="215" y1="58.5" x2="214" y2="64"/>
+        </g>
+        <!-- Headlight -->
+        <ellipse cx="220" cy="62" rx="2.2" ry="1.8" fill="#ffe870"/>
+        <ellipse cx="220" cy="62" rx="1.2" ry="1"   fill="#fff4a0"/>
+        <!-- Cab (JD green) -->
+        <rect x="165" y="49" width="26" height="17" rx="2" fill="#367C2B"/>
+        <!-- Front window -->
+        <rect x="168" y="52" width="15" height="11" rx="1" fill="rgba(190,230,255,0.42)"/>
+        <!-- Rear glass -->
+        <rect x="184" y="52" width="5"  height="11" rx="0.5" fill="rgba(190,230,255,0.25)"/>
+        <!-- Cab roof -->
+        <rect x="164" y="47" width="28" height="3.5" rx="1.5" fill="#2d6824"/>
+        <!-- Exhaust -->
+        <rect x="167" y="38" width="4.5" height="11" rx="2.2" fill="#1a1a1a"/>
+        <circle cx="169" cy="36" r="3.8" fill="rgba(100,100,100,0.22)"/>
+        <circle cx="171" cy="31" r="3"   fill="rgba(100,100,100,0.14)"/>
+        <circle cx="168" cy="27" r="2.2" fill="rgba(100,100,100,0.08)"/>
+        <!-- Hitch -->
+        <rect x="161" y="72" width="14" height="3.5" rx="1.5" fill="#2d6824"/>
+        <circle cx="161" cy="73.5" r="2.8" fill="#245420"/>
+
+        <!-- CORN FIELD — right side, 2 depth rows -->
+        <use href="#corn" transform="translate(284,83) scale(0.70)"/>
+        <use href="#corn" transform="translate(296,83) scale(0.73)"/>
+        <use href="#corn" transform="translate(308,83) scale(0.70)"/>
+        <use href="#corn" transform="translate(320,83) scale(0.74)"/>
+        <use href="#corn" transform="translate(332,83) scale(0.71)"/>
+        <use href="#corn" transform="translate(344,83) scale(0.73)"/>
+        <use href="#corn" transform="translate(356,83) scale(0.70)"/>
+        <use href="#corn" transform="translate(368,83) scale(0.72)"/>
+        <use href="#corn" transform="translate(380,83) scale(0.74)"/>
+        <use href="#corn" transform="translate(392,83) scale(0.71)"/>
+        <use href="#corn" transform="translate(280,90) scale(1.00)"/>
+        <use href="#corn" transform="translate(292,90) scale(1.06)"/>
+        <use href="#corn" transform="translate(304,90) scale(0.97)"/>
+        <use href="#corn" transform="translate(316,90) scale(1.04)"/>
+        <use href="#corn" transform="translate(328,90) scale(1.09)"/>
+        <use href="#corn" transform="translate(340,90) scale(0.96)"/>
+        <use href="#corn" transform="translate(352,90) scale(1.03)"/>
+        <use href="#corn" transform="translate(364,90) scale(0.98)"/>
+        <use href="#corn" transform="translate(376,90) scale(1.05)"/>
+        <use href="#corn" transform="translate(388,90) scale(0.94)"/>
+        <use href="#corn" transform="translate(400,90) scale(1.02)"/>
+      </svg>
+      <div class="wx-overlay">
+        <div class="wx-city-name">📍 <span id="wxCity">--</span></div>
+        <div class="wx-big-temp" id="wxTemp">--°</div>
+        <div class="wx-desc-line" id="wxDesc">--</div>
+        <div class="wx-hilow" id="wxHiLow">↑--° ↓--° &nbsp;·&nbsp; Sensação --°</div>
+      </div>
+    </div>
+
+    <!-- Body: search + hourly + agro -->
+    <div class="wx-body">
+      <!-- Search -->
+      <div>
+        <input
+          type="text"
+          id="city-input"
+          list="cities-datalist"
+          placeholder="São Paulo - SP"
+          autocomplete="off"
+          class="wx-search"
+          onchange="loadWeatherByCity()"
+          onkeydown="if(event.key==='Enter')loadWeatherByCity()"
+        >
+      <datalist id="cities-datalist">
+        <option value="Rio Branco - AC">
+        <option value="Cruzeiro do Sul - AC">
+        <option value="Maceió - AL">
+        <option value="Arapiraca - AL">
+        <option value="Macapá - AP">
+        <option value="Santana - AP">
+        <option value="Manaus - AM">
+        <option value="Parintins - AM">
+        <option value="Itacoatiara - AM">
+        <option value="Salvador - BA">
+        <option value="Feira de Santana - BA">
+        <option value="Vitória da Conquista - BA">
+        <option value="Ilhéus - BA">
+        <option value="Juazeiro - BA">
+        <option value="Barreiras - BA">
+        <option value="Luís Eduardo Magalhães - BA">
+        <option value="Fortaleza - CE">
+        <option value="Juazeiro do Norte - CE">
+        <option value="Sobral - CE">
+        <option value="Iguatu - CE">
+        <option value="Brasília - DF">
+        <option value="Vitória - ES">
+        <option value="Cachoeiro de Itapemirim - ES">
+        <option value="Linhares - ES">
+        <option value="Goiânia - GO">
+        <option value="Anápolis - GO">
+        <option value="Rio Verde - GO">
+        <option value="Jataí - GO">
+        <option value="Catalão - GO">
+        <option value="Itumbiara - GO">
+        <option value="São Luís - MA">
+        <option value="Imperatriz - MA">
+        <option value="Caxias - MA">
+        <option value="Balsas - MA">
+        <option value="Cuiabá - MT">
+        <option value="Sinop - MT">
+        <option value="Rondonópolis - MT">
+        <option value="Sorriso - MT">
+        <option value="Lucas do Rio Verde - MT">
+        <option value="Alta Floresta - MT">
+        <option value="Nova Mutum - MT">
+        <option value="Campo Novo do Parecis - MT">
+        <option value="Tangará da Serra - MT">
+        <option value="Primavera do Leste - MT">
+        <option value="Campo Grande - MS">
+        <option value="Dourados - MS">
+        <option value="Três Lagoas - MS">
+        <option value="Naviraí - MS">
+        <option value="Maracaju - MS">
+        <option value="Belo Horizonte - MG">
+        <option value="Uberlândia - MG">
+        <option value="Uberaba - MG">
+        <option value="Montes Claros - MG">
+        <option value="Patos de Minas - MG">
+        <option value="Juiz de Fora - MG">
+        <option value="Araxá - MG">
+        <option value="Paracatu - MG">
+        <option value="Frutal - MG">
+        <option value="Passos - MG">
+        <option value="Belém - PA">
+        <option value="Santarém - PA">
+        <option value="Marabá - PA">
+        <option value="Redenção - PA">
+        <option value="João Pessoa - PB">
+        <option value="Campina Grande - PB">
+        <option value="Curitiba - PR">
+        <option value="Londrina - PR">
+        <option value="Maringá - PR">
+        <option value="Cascavel - PR">
+        <option value="Ponta Grossa - PR">
+        <option value="Toledo - PR">
+        <option value="Francisco Beltrão - PR">
+        <option value="Guarapuava - PR">
+        <option value="Recife - PE">
+        <option value="Caruaru - PE">
+        <option value="Petrolina - PE">
+        <option value="Teresina - PI">
+        <option value="Bom Jesus - PI">
+        <option value="Uruçuí - PI">
+        <option value="Rio de Janeiro - RJ">
+        <option value="Campos dos Goytacazes - RJ">
+        <option value="Natal - RN">
+        <option value="Mossoró - RN">
+        <option value="Porto Alegre - RS">
+        <option value="Caxias do Sul - RS">
+        <option value="Passo Fundo - RS">
+        <option value="Santa Rosa - RS">
+        <option value="Cruz Alta - RS">
+        <option value="Ijuí - RS">
+        <option value="Pelotas - RS">
+        <option value="Porto Velho - RO">
+        <option value="Ji-Paraná - RO">
+        <option value="Boa Vista - RR">
+        <option value="Florianópolis - SC">
+        <option value="Chapecó - SC">
+        <option value="Lages - SC">
+        <option value="Caçador - SC">
+        <option value="Joinville - SC">
+        <option value="São Paulo - SP">
+        <option value="Ribeirão Preto - SP">
+        <option value="Campinas - SP">
+        <option value="Bauru - SP">
+        <option value="Araçatuba - SP">
+        <option value="Assis - SP">
+        <option value="Marília - SP">
+        <option value="Presidente Prudente - SP">
+        <option value="São José do Rio Preto - SP">
+        <option value="Piracicaba - SP">
+        <option value="Sorocaba - SP">
+        <option value="Araraquara - SP">
+        <option value="Aracaju - SE">
+        <option value="Palmas - TO">
+        <option value="Gurupi - TO">
+        <option value="Araguaína - TO">
+      </datalist>
+      </div>
+
+      <!-- Hourly -->
+      <div class="wx-hourly" id="wxHourly">
+        <div class="wx-loading">Carregando previsão...</div>
+      </div>
+
+      <!-- 5-day forecast -->
+      <div class="wx-daily" id="wxDaily"></div>
+
+      <!-- Agro tip -->
+      <div class="wx-agro-tip" id="wxAgroTip">Aguardando dados climáticos...</div>
+
+      <!-- Agro metrics grid -->
+      <div class="wx-metrics" id="wxMetrics"></div>
+    </div>
+  </div>
+
+  <!-- Notícias -->
+  <div class="alert-card">
+    <div class="alert-title">📰 Últimas do Agro</div>
+    <div class="news-feed" id="news-feed">
+      <div class="alert-content">Carregando notícias...</div>
+    </div>
+    <div class="news-portais">
+      <a class="news-portal-link" href="https://noticiasagricolas.com.br" target="_blank">Notícias Agrícolas ↗</a>
+      <a class="news-portal-link" href="https://www.canalrural.com.br" target="_blank">Canal Rural ↗</a>
+      <a class="news-portal-link" href="https://globorural.globo.com" target="_blank">Globo Rural ↗</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- PRODUTOS PANEL -->
+<div id="view-produtos" class="full-panel" style="display:none">
+  <div class="produtos-header">
+    <div class="fp-title">Catálogo de Produtos</div>
+    <div class="fp-sub">Portfólio Adubos Vera Cruz — doses, indicações e diferenciais técnicos</div>
+    <div class="produtos-filter-bar" id="prodFilterBar">
+      <button class="prod-filter-btn active" onclick="filterProdutos('todos',this)">Todos</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('N',this)">Nitrogenados</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('P',this)">Fosfatados</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('K',this)">Potássicos</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('NPK',this)">Compostos NPK</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('micro',this)">Micronutrientes</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('calcario',this)">Calcário</button>
+    </div>
+  </div>
+  <div class="produtos-body">
+    <div class="produtos-grid" id="produtosGrid"></div>
+  </div>
+</div>
 
 <!-- CALCULADORA PANEL -->
 <div id="view-calculadora" class="full-panel" style="display:none">
@@ -836,17 +1951,37 @@ header {
         </select>
       </div>
 
+      <div class="personal-form">
+        <div class="field-group">
+          <label class="field-label">Tipo de Solo</label>
+          <select id="calc-solo">
+            <option value="arenoso">Arenoso</option>
+            <option value="argiloso">Argiloso</option>
+            <option value="misto">Misto</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Produtividade Esperada (t/ha)</label>
+          <input type="number" id="calc-prod-esperada" placeholder="ex: 4.5" min="0" step="0.1">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Histórico de Produtividade (t/ha)</label>
+          <input type="number" id="calc-prod-historico" placeholder="ex: 4.0" min="0" step="0.1">
+        </div>
+        <button onclick="calcPersonalizado()" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;">Calcular Personalizado</button>
+      </div>
+
       <div class="calc-hint" id="calc-hint" style="display:none"></div>
     </div>
 
     <div class="fp-right">
       <div class="fp-title" style="font-size:13px;margin-bottom:14px">Pedido estimado</div>
       <div id="calc-results" class="calc-results-empty">
-        <span style="color:var(--muted);font-size:13px">Preencha os campos ao lado →</span>
+        <span style="color:var(--muted);font-size:13px">Preencha os campos</span>
       </div>
       <div id="calc-total-box" style="display:none" class="calc-total-box">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Total de produtos</div>
-        <div id="calc-total-ton" style="font-size:28px;font-weight:700;font-family:'Playfair Display',serif;color:var(--accent)"></div>
+        <div id="calc-total-ton" style="font-size:28px;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;color:var(--accent)"></div>
         <div style="font-size:11px;color:var(--muted);margin-top:4px" id="calc-total-sub"></div>
       </div>
       <div id="calc-pitch" class="calc-pitch" style="display:none"></div>
@@ -909,6 +2044,9 @@ header {
     <button class="culture-btn" data-culture="coco" onclick="toggleCulture('coco')">
       <span class="dot" style="background:var(--coco)"></span> Coco
     </button>
+    <span class="culture-bar-label" style="margin-left:20px">Estação</span>
+    <button class="culture-btn" data-season="seca" onclick="filterBySeason('seca')">🌞 Seca</button>
+    <button class="culture-btn" data-season="chuva" onclick="filterBySeason('chuva')">🌧️ Chuva</button>
     <button class="clear-btn" onclick="clearAll()">Limpar filtros</button>
   </div>
 
@@ -979,9 +2117,9 @@ header {
         Brasil
         <span class="sub">Clique em um estado para filtrar</span>
       </div>
-      <div class="state-cultures" id="stateCultures"></div>
     </div>
     <div class="timeline-section">
+      <div class="state-cultures" id="stateCultures" style="margin-bottom:8px"></div>
       <div class="section-title">Calendário de Safra</div>
       <div class="timeline-grid" id="timelineGrid"></div>
       <div class="legend-bar">
@@ -995,7 +2133,10 @@ header {
   <!-- DETAIL CARDS: col 3 -->
   <div class="cards-panel">
     <div class="cards-panel-header">
-      <div class="section-title" style="margin:0">Detalhes por Cultura</div>
+      <div class="state-name">
+        Detalhes por Cultura
+        <span class="sub">Clique em uma cultura para descobrir mais</span>
+      </div>
     </div>
     <div class="detail-cards" id="detailCards"></div>
   </div>
@@ -1012,7 +2153,7 @@ const CULTURES = {
     color: 'var(--soja)',
     colorHex: '#3a8a2e',
     dimColor: 'var(--soja-dim)',
-    calendar: { default: ['-','-','-','C','C','-','-','-','P','P','P','P'] },
+    calendar: { default: ['C','C','C','C','-','-','-','-','P','P','P','P'] },
     states: ['MT','GO','MS','PR','RS','SC','SP','MG','BA','MA','PI','TO','RO','PA'],
     detail: {
       ciclo: '90–130 dias',
@@ -1031,7 +2172,7 @@ const CULTURES = {
     color: 'var(--milho)',
     colorHex: '#c47c08',
     dimColor: 'var(--milho-dim)',
-    calendar: { default: ['-','C','C','-','-','-','P','P','P','-','-','-'] },
+    calendar: { default: ['C','C','C','-','-','C','C','C','P','P','P','-'] },
     states: ['MT','GO','MS','PR','RS','SC','SP','MG','BA','MA','PI','TO','RO','PA','SE','AL','PE','CE'],
     detail: {
       ciclo: '110–140 dias (1ª safra) | 90–120 dias (safrinha)',
@@ -1050,7 +2191,7 @@ const CULTURES = {
     color: 'var(--cafe)',
     colorHex: '#6b2f0e',
     dimColor: 'var(--cafe-dim)',
-    calendar: { default: ['P','P','-','C','C','C','C','-','F','F','P','P'] },
+    calendar: { default: ['P','-','-','C','C','C','C','C','C','F','P','P'] },
     states: ['MG','SP','ES','PR','BA','RO'],
     detail: {
       ciclo: 'Cultura perene — ciclo produtivo de 20–30 anos',
@@ -1069,7 +2210,7 @@ const CULTURES = {
     color: 'var(--cana)',
     colorHex: '#1a6e7a',
     dimColor: 'var(--cana-dim)',
-    calendar: { default: ['P','P','P','P','-','C','C','C','C','C','C','P'] },
+    calendar: { default: ['P','P','P','C','C','C','C','C','C','C','P','P'] },
     states: ['SP','MG','GO','MS','MT','PR','AL','PE','BA','MA','RN','SE'],
     detail: {
       ciclo: 'Cana planta: 12–18 meses | Soqueira: 5–6 cortes de 12 meses cada',
@@ -1088,7 +2229,7 @@ const CULTURES = {
     color: 'var(--algodao)',
     colorHex: '#8b3a6b',
     dimColor: 'var(--algodao-dim)',
-    calendar: { default: ['-','C','C','C','C','-','-','-','P','P','P','-'] },
+    calendar: { default: ['P','P','-','-','-','C','C','C','C','-','-','P'] },
     states: ['MT','BA','GO','MS','MA','PI','TO'],
     detail: {
       ciclo: '140–180 dias',
@@ -1107,7 +2248,7 @@ const CULTURES = {
     color: 'var(--citros)',
     colorHex: '#c45e00',
     dimColor: 'var(--citros-dim)',
-    calendar: { default: ['-','-','P','P','-','C','C','C','C','-','-','-'] },
+    calendar: { default: ['-','-','P','P','-','C','C','C','C','C','C','-'] },
     states: ['SP','MG','BA','SE','RS','PR'],
     detail: {
       ciclo: 'Cultura perene — início de produção no 3º ano, pico entre 8–15 anos',
@@ -1126,7 +2267,7 @@ const CULTURES = {
     color: 'var(--arroz)',
     colorHex: '#5a7a3a',
     dimColor: 'var(--arroz-dim)',
-    calendar: { default: ['-','-','C','C','-','-','-','-','-','P','P','P'] },
+    calendar: { default: ['-','C','C','C','-','-','-','-','-','P','P','P'] },
     states: ['RS','MT','MA','TO','GO','MS','PA','RO'],
     detail: {
       ciclo: '110–140 dias',
@@ -1145,7 +2286,7 @@ const CULTURES = {
     color: 'var(--feijao)',
     colorHex: '#7a3a1a',
     dimColor: 'var(--feijao-dim)',
-    calendar: { default: ['C','-','-','P','-','C','P','-','-','P','C','-'] },
+    calendar: { default: ['C','C','P','C','C','P','P','-','C','P','P','-'] },
     states: ['PR','MG','GO','BA','SP','MT','RS','CE','PI','MA'],
     detail: {
       ciclo: '65–100 dias (até 3 safras por ano)',
@@ -1164,7 +2305,7 @@ const CULTURES = {
     color: 'var(--trigo)',
     colorHex: '#b8960a',
     dimColor: 'var(--trigo-dim)',
-    calendar: { default: ['C','C','-','-','-','P','P','-','-','C','C','-'] },
+    calendar: { default: ['-','-','-','P','P','P','P','-','C','C','C','-'] },
     states: ['PR','RS','SC','MS','SP','GO','MG'],
     detail: {
       ciclo: '90–120 dias',
@@ -1364,7 +2505,7 @@ function buildDetailCards(cultures) {
         </span></div>
         <div class="detail-row"><span class="detail-key">Insumos</span><span class="detail-val">${d.fertilizantesChave}</span></div>
         <div class="detail-row"><span class="detail-key">Janela vendas</span><span class="detail-val">${d.janelaVendas}</span></div>
-        <div style="margin-top:10px;padding:10px;background:${c.colorHex}18;border-radius:6px;font-size:11px;color:#5a3e28;border-left:2px solid ${c.colorHex}80;line-height:1.6">${d.curiosidade}</div>
+        <div style="margin-top:10px;padding:10px;background:${c.colorHex}18;border-radius:6px;font-size:11px;color:#5a3e28;border-left:2px solid ${c.colorHex}80;line-height:1.6"><span class="pitch-label" style="color:${c.colorHex};display:block;margin-bottom:4px">Ideia</span>${d.curiosidade}</div>
       </div>
     `;
     container.appendChild(card);
@@ -1377,6 +2518,12 @@ function toggleCard(header) {
   body.classList.toggle('open');
   toggle.textContent = body.classList.contains('open') ? '−' : '+';
   toggle.style.transform = body.classList.contains('open') ? 'rotate(0deg)' : '';
+
+  // Drill-down: se expandido, mostrar mais detalhes interativos
+  if (body.classList.contains('open')) {
+    const culturaName = header.querySelector('.detail-card-name').textContent.toLowerCase();
+    drillDown(culturaName);
+  }
 }
 
 function updateRightPanel() {
@@ -1447,9 +2594,13 @@ function toggleCulture(cId) {
 
 function clearAll() {
   activeCultures.clear();
+  activeSeason = null;
   selectedState = null;
   document.querySelectorAll('.culture-btn').forEach(btn => {
     btn.className = 'culture-btn';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    btn.style.background = '';
   });
   updateMap();
   updateRightPanel();
@@ -1500,12 +2651,189 @@ document.querySelectorAll('.state-path').forEach(path => {
 });
 
 // =============================================
+// =============================================
+// PRODUTOS DATA
+// =============================================
+const PRODUTOS = [
+  {
+    cod: '0005',
+    nome: 'Nitrato de Amônio 34% GR',
+    formula: 'N 34%',
+    tipo: ['N'],
+    culturas: ['milho','cana','algodao','feijao','trigo','citros','arroz','cafe','coco'],
+    aplicacao: 'Cobertura superficial a lanço ou em linha',
+    desc: 'Fonte nitrogenada de liberação imediata com nitrogênio na forma nítrica (NO₃⁻) e amoniacal (NH₄⁺). Absorção mais eficiente que a ureia, especialmente em condições de calor e solo seco.',
+    diferencial: 'Até 20% menos perda por volatilização vs. ureia 45% no cerrado. Indicado para cobertura de milho, cana soqueira, feijão e trigo — culturas que exigem N de ação rápida. Principal produto em volume da Vera Cruz (126 mil t/ano em cana).',
+  },
+  {
+    cod: '0006',
+    nome: 'KCl 60% GR',
+    formula: 'K₂O 60%',
+    tipo: ['K'],
+    culturas: ['soja','cana','coco','citros','arroz','trigo','feijao','milho','algodao'],
+    aplicacao: 'Sulco de plantio, antecipado ou cobertura',
+    desc: 'Cloreto de potássio granulado com 60% de K₂O. Principal fonte de potássio para grande maioria das culturas. Alta concentração garante menor volume de aplicação por hectare.',
+    diferencial: 'Para coco, é o produto de maior giro — cada palmeira exporta ~80g K₂O/fruto. Para soja, pode ser antecipado (set–out) para travar preço cambial. KCl Branco 62% disponível para aplicação com plantadeiras de alta precisão.',
+  },
+  {
+    cod: '2479/3534',
+    nome: 'NP 10-46 GR / NP 08-40 GR',
+    formula: 'NP 10-46 / 08-40',
+    tipo: ['N','P'],
+    culturas: ['soja','arroz','trigo','feijao','algodao','coco'],
+    aplicacao: 'Sulco de semeadura',
+    desc: 'Fertilizante nitrogenado-fosfatado granulado de alta concentração em P₂O₅. Formulação semelhante ao MAP, ideal para aplicação no sulco de semeadura — coloca fósforo prontamente disponível na zona de enraizamento.',
+    diferencial: 'Superior ao SSP no sulco: P disponível imediatamente, sem esperar mineralização. Vera Cruz oferece 4 versões (10-46, 08-40, 10-40 e variações) — argumento técnico para soja. Menor custo por kg P vs SSP após logística.',
+  },
+  {
+    cod: '1059',
+    nome: 'NPK 19-04-19 GR',
+    formula: 'NPK 19-04-19',
+    tipo: ['NPK'],
+    culturas: ['milho','cana','algodao','feijao','citros','coco','arroz'],
+    aplicacao: 'Sulco de plantio ou cobertura base',
+    desc: 'Formulação equilibrada com ênfase em N e K. Atende culturas de alta demanda de nitrogênio e potássio no estabelecimento. Granulado de fácil aplicação mecânica.',
+    diferencial: 'Formulação versátil — usado em milho 1ª safra, cana planta, algodão e feijão. Alta relação N:K favorece desenvolvimento vegetativo e enchimento de grão. Complementa bem o NP no sulco quando se busca NPK completo.',
+  },
+  {
+    cod: '0017',
+    nome: 'NPK 27-06-06 GR',
+    formula: 'NPK 27-06-06',
+    tipo: ['NPK'],
+    culturas: ['cafe'],
+    aplicacao: 'Cobertura parcelada (4 a 5 aplicações/ano)',
+    desc: 'Formulação específica para cafeeiro em cobertura. Alta proporção de N com doses moderadas de P e K, ideal para fase vegetativa e manutenção da lavoura. Referência histórica para produtores de café.',
+    diferencial: 'Formulado específico confirmado pela Vera Cruz para cafeeiro. Casa do Café é cliente referência. Cafeeiro compra 4x/ano — cada visita gera pedido. Alta relação N permite nutrição contínua com menor número de aplicações.',
+  },
+  {
+    cod: '2033',
+    nome: 'NKS 13-00-44 + 1MgO GR',
+    formula: 'NKS 13-00-44+Mg',
+    tipo: ['N','K'],
+    culturas: ['cana'],
+    aplicacao: 'Cobertura de soqueira pós-corte',
+    desc: 'Formulação exclusiva para soqueira de cana-de-açúcar. Entrega N, K e S em uma única passagem, com adição de magnésio (1% MgO) para complementar nutrição. Elimina a necessidade de aplicação separada de KCl.',
+    diferencial: 'Produto diferenciado: N+K+S em dose única reduz custo operacional (menos passagens de máquina). Para usinas que operam com frota própria, a economia logística é argumento de venda poderoso. Cooperativas de cana SP são clientes-alvo.',
+  },
+  {
+    cod: '1918',
+    nome: 'NPK 15-15-15 + 11S GR',
+    formula: 'NPK 15-15-15+S',
+    tipo: ['NPK'],
+    culturas: ['trigo','citros','cafe'],
+    aplicacao: 'Sulco de plantio ou cobertura base em formação',
+    desc: 'Formulação balanceada com enxofre. O S (11%) melhora a eficiência do nitrogênio e é essencial para qualidade proteica do trigo e ativação enzimática em frutíferas. Granulado de fácil aplicação.',
+    diferencial: 'Para trigo, o S melhora qualidade proteica do glúten — argumento de valor para produtores que vendem para moinhos com bonificação por proteína. Para citros em formação, equilibra todos os macros + S em uma aplicação.',
+  },
+  {
+    cod: '0013',
+    nome: 'Borogran 10% GR',
+    formula: 'B 10%',
+    tipo: ['micro'],
+    culturas: ['soja','algodao','citros','cafe','coco','feijao'],
+    aplicacao: 'Sulco de plantio, cobertura ou foliar',
+    desc: 'Boro granulado de alta eficiência com 10% de B. Essencial para floração, fecundação e formação de frutos em diversas culturas. Disponibilidade gradual evita toxidez.',
+    diferencial: 'Para algodão, a deficiência de boro causa abortamento de maçãs — custo do Borogran é irrisório vs. perda de produtividade. Para citros e café pré-florada, é insumo prioritário. Para soja no sulco, melhora nodulação e formação de vagens.',
+  },
+  {
+    cod: '0016',
+    nome: 'Zinco 10% GR',
+    formula: 'Zn 10%',
+    tipo: ['micro'],
+    culturas: ['milho','soja','trigo','citros','cafe','arroz'],
+    aplicacao: 'Sulco de plantio ou foliar',
+    desc: 'Sulfato de zinco granulado com 10% de Zn. Essencial para síntese de auxinas, fotossíntese e ativação enzimática. Deficiência de zinco é a mais comum em solos tropicais do Brasil.',
+    diferencial: 'Milho é particularmente sensível à deficiência de Zn nos estádios iniciais — aplicação no sulco é a forma mais eficiente. Para café e citros, complementa FTE BR-12 em solos esgotados. Custo por ha muito baixo com alto retorno.',
+  },
+  {
+    cod: '0012',
+    nome: 'FTE BR-12 GR',
+    formula: 'Zn+B+Cu+Mn+Mo+Fe',
+    tipo: ['micro'],
+    culturas: ['soja','milho','cafe','cana','algodao','citros','arroz','feijao','trigo','coco'],
+    aplicacao: 'Sulco de plantio ou incorporado ao solo',
+    desc: 'Fritas de micronutrientes formulação BR-12: Zn, B, Cu, Mn, Mo e Fe em fusão vítrea. Liberação gradual por hidrólise — mínimo 2 safras de efeito residual. Cobre as principais deficiências de solos tropicais.',
+    diferencial: 'Uma única aplicação fornece todos os micronutrientes essenciais por 1 a 2 safras. Ideal para incorporação no plantio. Custo-benefício superior à aplicação separada de cada micronutriente foliar.',
+  },
+  {
+    cod: '2200',
+    nome: 'Micronutriente FMA-BR',
+    formula: 'Mix micro (Zn,B,Cu,Mn)',
+    tipo: ['micro'],
+    culturas: ['soja','cafe','citros','coco'],
+    aplicacao: 'Foliar ou cobertura',
+    desc: 'Mistura granulada de micronutrientes solúveis para aplicação foliar ou no solo. Formulação mais solúvel que FTE, indicada para correção rápida de deficiências já manifestadas na lavoura.',
+    diferencial: 'Para soja em V3–R1, complementa o pacote foliar com B e Zn de rápida absorção. Para citros com alta demanda de micronutrientes (aplicação a cada 30–45 dias), FMA-BR é alternativa mais solúvel ao FTE.',
+  },
+  {
+    cod: '2095',
+    nome: 'MKP 52-34 GR',
+    formula: 'P₂O₅ 52% · K₂O 34%',
+    tipo: ['P','K'],
+    culturas: ['citros'],
+    aplicacao: 'Fertirrigação ou cobertura solúvel',
+    desc: 'Fosfato Monopotássico (MKP) de alta solubilidade. Fornece P e K sem N, ideal para fase de granação onde excesso de nitrogênio seria prejudicial. Produto premium para sistemas de irrigação.',
+    diferencial: 'Único produto do portfólio para fertirrigação de citros — nicho altamente tecnificado em SP. Na granação da laranja, P+K sem N é o protocolo correto: evita empurrar vegetação e concentra energia no fruto. Coopercitrus já usa.',
+  },
+  {
+    cod: '0010/1019',
+    nome: 'Carbonato de Cálcio e Magnésio',
+    formula: 'CaCO₃ + MgCO₃',
+    tipo: ['calcario'],
+    culturas: ['soja','cana','arroz','citros'],
+    aplicacao: 'Incorporado ao solo (PRNT 70–80%) — calagem',
+    desc: 'Calcário calcítico e/ou dolomítico para correção de acidez. Eleva pH, fornece Ca e Mg, aumenta CTC e melhora disponibilidade de fósforo. Base agronômica para toda adubação posterior.',
+    diferencial: 'Produto base — sem calagem correta, toda adubação tem eficiência reduzida. Pré-venda estratégica: fechar calcário antecipado em ago–set garante aplicação no período correto e trava preço para o produtor. Principal entrada de relações de longo prazo.',
+  },
+];
+
+let prodFiltroAtivo = 'todos';
+
+function renderProdutos(filtro) {
+  filtro = filtro || prodFiltroAtivo;
+  const grid = document.getElementById('produtosGrid');
+  if (!grid) return;
+  const lista = filtro === 'todos' ? PRODUTOS : PRODUTOS.filter(p => p.tipo.includes(filtro));
+  grid.innerHTML = lista.map(p => {
+    const culturesTags = p.culturas.map(cId => {
+      const c = CULTURES[cId];
+      return `<span class="prod-culture-tag" style="background:${c.colorHex}20;color:${c.colorHex};border:1px solid ${c.colorHex}40">${c.icon} ${c.name}</span>`;
+    }).join('');
+    return `<div class="prod-card">
+      <div class="prod-card-top">
+        <div>
+          <div class="prod-name">${p.nome}</div>
+          <div class="prod-code">Cód. ${p.cod}</div>
+        </div>
+        <div class="prod-formula-badge">${p.formula}</div>
+      </div>
+      <div class="prod-desc">${p.desc}</div>
+      <div class="prod-indicado-label">Indicado para</div>
+      <div class="prod-cultures">${culturesTags}</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Aplicação</div>
+      <div style="font-size:11px;color:#5a3e28;margin-bottom:8px">${p.aplicacao}</div>
+      <div class="prod-diferencial"><span class="pitch-label" style="display:block;margin-bottom:3px">Diferencial</span>${p.diferencial}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterProdutos(filtro, btn) {
+  prodFiltroAtivo = filtro;
+  document.querySelectorAll('.prod-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProdutos(filtro);
+}
+
 // VIEW SWITCHING
 // =============================================
 function showView(view) {
+  const isMapa = view === 'mapa';
   document.getElementById('view-calculadora').style.display = 'none';
   document.getElementById('view-comparativo').style.display = 'none';
-  document.querySelector('.main').style.display = view === 'mapa' ? 'grid' : 'none';
+  document.getElementById('view-produtos').style.display = 'none';
+  document.querySelector('.main').style.display = isMapa ? 'grid' : 'none';
+  document.querySelector('.kpis-section').style.display = isMapa ? '' : 'none';
+  document.querySelector('.dashboard-row').style.display = isMapa ? '' : 'none';
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   event.target.classList.add('active');
   if (view === 'calculadora') {
@@ -1513,6 +2841,9 @@ function showView(view) {
   } else if (view === 'comparativo') {
     document.getElementById('view-comparativo').style.display = 'block';
     showComp('nitrato');
+  } else if (view === 'produtos') {
+    document.getElementById('view-produtos').style.display = 'block';
+    renderProdutos();
   }
 }
 
@@ -1737,7 +3068,7 @@ function calcUpdate() {
   if (!cultura) {
     estagioWrap.style.display = 'none';
     hint.style.display = 'none';
-    results.innerHTML = '<span style="color:var(--muted);font-size:13px">Preencha os campos ao lado →</span>';
+    results.innerHTML = '<span style="color:var(--muted);font-size:13px">Preencha os campos</span>';
     results.className = 'calc-results-empty';
     totalBox.style.display = 'none';
     pitchEl.style.display = 'none';
@@ -1784,9 +3115,782 @@ function calcUpdate() {
   totalBox.style.display = 'block';
 
   const pitchText = data.pitch(area, estagio);
-  pitchEl.innerHTML = `<span class="pitch-label">💬 Pitch de fechamento</span>${pitchText}`;
+  pitchEl.innerHTML = `<span class="pitch-label">Ideia</span>${pitchText}`;
   pitchEl.style.display = 'block';
 }
+
+// =============================================
+// NOVAS FUNÇÕES: KPIs, PERSONALIZAÇÃO, GRÁFICO, API
+// =============================================
+
+// Cotações de referência por cultura (base estimativa Q1-Q2 2026 · CEPEA)
+const COTACOES_REF = [
+  { nome: 'Soja',    icon: '🌱', unidade: 'sc 60kg · ref.',  base: 138, var: 18, link: 'https://www.cepea.esalq.usp.br/br/indicador/soja.aspx',    prefix: 'R$', suffix: '/sc' },
+  { nome: 'Milho',   icon: '🌽', unidade: 'sc 60kg · ref.',  base: 68,  var: 10, link: 'https://www.cepea.esalq.usp.br/br/indicador/milho.aspx',   prefix: 'R$', suffix: '/sc' },
+  { nome: 'Café',    icon: '☕', unidade: 'sc 60kg · ref.',  base: 3200,var: 400,link: 'https://www.cepea.esalq.usp.br/br/indicador/cafe.aspx',    prefix: 'R$', suffix: '/sc' },
+  { nome: 'Algodão', icon: '🌸', unidade: '@ 15kg · ref.',   base: 110, var: 12, link: 'https://www.cepea.esalq.usp.br/br/indicador/algodao.aspx', prefix: 'R$', suffix: '/@' },
+  { nome: 'Trigo',   icon: '🌾', unidade: 'sc 60kg · ref.',  base: 82,  var: 10, link: 'https://www.cepea.esalq.usp.br/br/indicador/trigo.aspx',   prefix: 'R$', suffix: '/sc' },
+  { nome: 'Feijão',  icon: '🫘', unidade: 'sc 60kg · ref.',  base: 260, var: 50, link: 'https://www.cepea.esalq.usp.br/br/indicador/feijao.aspx',  prefix: 'R$', suffix: '/sc' },
+];
+
+let cotacaoIndex = 0;
+let cotacaoTimer = null;
+const COTACAO_INTERVALO = 4500; // ms por cultura
+
+function mostrarCotacao(idx) {
+  const c = COTACOES_REF[idx];
+  const preco = (c.base + Math.random() * c.var).toFixed(2);
+
+  const elNome     = document.getElementById('cotacao-nome');
+  const elIcon     = document.getElementById('cotacao-icon');
+  const elPreco    = document.getElementById('kpi-preco');
+  const elUnidade  = document.getElementById('cotacao-unidade');
+  const elLink     = document.getElementById('cotacao-link');
+  const elProgress = document.getElementById('cotacao-progress');
+
+  // Fade out
+  elPreco.style.opacity = '0';
+  elNome.style.opacity  = '0';
+
+  setTimeout(() => {
+    elNome.textContent    = c.nome;
+    elIcon.textContent    = c.icon;
+    elPreco.textContent   = `${c.prefix} ${preco}${c.suffix}`;
+    elUnidade.textContent = c.unidade;
+    elLink.href           = c.link;
+
+    // Fade in
+    elPreco.style.transition = 'opacity 0.3s';
+    elNome.style.transition  = 'opacity 0.3s';
+    elPreco.style.opacity    = '1';
+    elNome.style.opacity     = '1';
+
+    // Reinicia barra de progresso
+    elProgress.style.transition = 'none';
+    elProgress.style.width      = '100%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        elProgress.style.transition = `width ${COTACAO_INTERVALO}ms linear`;
+        elProgress.style.width      = '0%';
+      });
+    });
+  }, 200);
+}
+
+function iniciarCarrosselCotacoes() {
+  mostrarCotacao(cotacaoIndex);
+  cotacaoTimer = setInterval(() => {
+    cotacaoIndex = (cotacaoIndex + 1) % COTACOES_REF.length;
+    mostrarCotacao(cotacaoIndex);
+  }, COTACAO_INTERVALO);
+
+  // Clique no card avança manualmente
+  document.getElementById('kpi-cotacao-card').addEventListener('click', (e) => {
+    if (e.target.tagName === 'A') return; // deixa o link do CEPEA funcionar
+    clearInterval(cotacaoTimer);
+    cotacaoIndex = (cotacaoIndex + 1) % COTACOES_REF.length;
+    mostrarCotacao(cotacaoIndex);
+    cotacaoTimer = setInterval(() => {
+      cotacaoIndex = (cotacaoIndex + 1) % COTACOES_REF.length;
+      mostrarCotacao(cotacaoIndex);
+    }, COTACAO_INTERVALO);
+  });
+
+  document.getElementById('kpi-cotacao-card').style.cursor = 'pointer';
+}
+
+// Carregar KPIs e dados externos
+function loadKPIs() {
+  iniciarCarrosselCotacoes();
+
+  // Carregar clima inicial
+  loadWeatherByCity();
+
+  // Carregar notícias do agro
+  carregarNoticias();
+}
+
+function timeAgo(dateStr) {
+  const diff = (Date.now() - new Date(dateStr)) / 1000;
+  if (diff < 3600)  return `${Math.floor(diff/60)}min`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h`;
+  return `${Math.floor(diff/86400)}d`;
+}
+
+async function fetchRSS(rssUrl) {
+  // 1) allorigins JSON API — most reliable (returns { contents, status })
+  try {
+    const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`, { signal: AbortSignal.timeout(12000) });
+    if (r.ok) {
+      const json = await r.json();
+      if (json?.contents && (json.contents.includes('<item>') || json.contents.includes('<item '))) return json.contents;
+    }
+  } catch(_) {}
+  // 2) allorigins raw fallback
+  try {
+    const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`, { signal: AbortSignal.timeout(10000) });
+    if (r.ok) { const t = await r.text(); if (t.includes('<item>') || t.includes('<item ')) return t; }
+  } catch(_) {}
+  // 3) corsproxy.io fallback
+  try {
+    const r = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(rssUrl)}`, { signal: AbortSignal.timeout(10000) });
+    if (r.ok) { const t = await r.text(); if (t.includes('<item>') || t.includes('<item ')) return t; }
+  } catch(_) {}
+  return null;
+}
+
+function parseRSSItems(text, sourceName, sourceColor, maxItems) {
+  try {
+    const xml = new DOMParser().parseFromString(text, 'text/xml');
+    const items = xml.querySelectorAll('item');
+    return Array.from(items).slice(0, maxItems).map(item => {
+      const title   = item.querySelector('title')?.textContent?.trim() || '';
+      const pubDate = item.querySelector('pubDate')?.textContent || '';
+      const descRaw = item.querySelector('description')?.textContent || '';
+      const linkEl  = new DOMParser().parseFromString(descRaw, 'text/html').querySelector('a');
+      const link    = linkEl?.href
+                   || item.querySelector('link')?.nextSibling?.textContent?.trim()
+                   || '#';
+      return { title, link, pubDate, source: sourceName, color: sourceColor };
+    }).filter(n => n.title);
+  } catch(_) { return []; }
+}
+
+// Cores para fontes do Google News
+const GN_SOURCE_COLORS = {
+  'canal rural': '#c47c08',
+  'canalrural': '#c47c08',
+  'globo rural': '#6b2f0e',
+  'globorural': '#6b2f0e',
+  'notícias agrícolas': '#3a8a2e',
+  'noticias agricolas': '#3a8a2e',
+  'noticiasagricolas': '#3a8a2e',
+  'embrapa': '#1a6b2e',
+  'agência brasil': '#0a4a8c',
+  'agencia brasil': '#0a4a8c',
+  'valor econômico': '#7b2d8b',
+  'valor economico': '#7b2d8b',
+  'folha': '#c0392b',
+  'uol': '#c0392b',
+  'g1': '#e74c3c',
+  'cepea': '#2c7744',
+  'agrolink': '#1a7a3c',
+};
+function gnSourceColor(name) {
+  if (!name) return '#888';
+  const key = name.toLowerCase();
+  for (const [k, v] of Object.entries(GN_SOURCE_COLORS)) {
+    if (key.includes(k)) return v;
+  }
+  return '#888';
+}
+
+function parseGoogleNewsItems(text, maxItems) {
+  try {
+    const xml = new DOMParser().parseFromString(text, 'text/xml');
+    const items = xml.querySelectorAll('item');
+    return Array.from(items).slice(0, maxItems).map(item => {
+      const title    = item.querySelector('title')?.textContent?.trim() || '';
+      const pubDate  = item.querySelector('pubDate')?.textContent || '';
+      const link     = item.querySelector('link')?.nextSibling?.textContent?.trim()
+                    || item.querySelector('link')?.textContent?.trim()
+                    || '#';
+      const srcEl    = item.querySelector('source');
+      const srcName  = srcEl?.textContent?.trim() || '';
+      const color    = gnSourceColor(srcName);
+      return { title, link, pubDate, source: srcName, color };
+    }).filter(n => n.title);
+  } catch(_) { return []; }
+}
+
+function renderNewsItems(feedEl, items) {
+  // Group by source
+  const bySource = {};
+  const order = [];
+  items.forEach(n => {
+    if (!bySource[n.source]) { bySource[n.source] = []; order.push(n.source); }
+    bySource[n.source].push(n);
+  });
+  let html = '';
+  order.forEach((src, i) => {
+    const group = bySource[src];
+    const color = group[0].color;
+    html += `<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:${color};padding:6px 0 3px;border-top:1px solid var(--border);margin-top:${i===0?'0':'4px'}">${src || 'Agro'}</div>`;
+    group.forEach(n => {
+      html += `<div class="news-item"><div>
+        <a class="news-headline" href="${n.link}" target="_blank" rel="noopener">${n.title}</a>
+        <span style="font-size:9px;color:var(--muted);display:block;margin-top:1px">${timeAgo(n.pubDate)}</span>
+      </div></div>`;
+    });
+  });
+  feedEl.innerHTML = html;
+}
+
+async function carregarNoticias() {
+  const feedEl = document.getElementById('news-feed');
+  feedEl.innerHTML = '<div class="alert-content" style="font-size:11px;color:var(--muted)">Carregando notícias...</div>';
+
+  // Cada portal tem: URL direta primeiro, depois Google News site: como fallback
+  const portais = [
+    {
+      name: 'Not. Agrícolas', color: '#3a8a2e',
+      urls: [
+        'https://www.noticiasagricolas.com.br/rss.xml',
+        'https://www.noticiasagricolas.com.br/feed/',
+        'https://news.google.com/rss/search?q=site:noticiasagricolas.com.br&hl=pt-BR&gl=BR&ceid=BR:pt-419',
+      ],
+    },
+    {
+      name: 'Canal Rural', color: '#c47c08',
+      urls: [
+        'https://www.canalrural.com.br/feed/',
+        'https://news.google.com/rss/search?q=site:canalrural.com.br+agronegocio&hl=pt-BR&gl=BR&ceid=BR:pt-419',
+      ],
+    },
+    {
+      name: 'Globo Rural', color: '#6b2f0e',
+      urls: [
+        'https://globorural.globo.com/rss/',
+        'https://rss.globo.com/globo_rural.xml',
+        'https://news.google.com/rss/search?q=site:globorural.globo.com+agropecuaria&hl=pt-BR&gl=BR&ceid=BR:pt-419',
+      ],
+    },
+  ];
+
+  // Loop sequencial por portal — sem Promise.all, sem setTimeout
+  const allItems = [];
+  for (const p of portais) {
+    let got = false;
+    for (const url of p.urls) {
+      if (got) break;
+      try {
+        const text = await fetchRSS(url);
+        if (text) {
+          // Para Google News, força nome e cor do portal (ignora <source> do XML)
+          const isGN = url.includes('news.google.com');
+          const items = isGN
+            ? parseGoogleNewsItems(text, 5).map(i => ({ ...i, source: p.name, color: p.color }))
+            : parseRSSItems(text, p.name, p.color, 5);
+          if (items.length > 0) { allItems.push(...items); got = true; }
+        }
+      } catch(_) {}
+    }
+  }
+
+  if (allItems.length > 0) {
+    renderNewsItems(feedEl, allItems);
+  } else {
+    feedEl.innerHTML = '<div class="alert-content" style="font-size:11px">Não foi possível carregar as notícias.</div>';
+  }
+}
+
+// Função para buscar clima por cidade selecionada
+function cityInputToQuery(val) {
+  if (!val) return 'Sao Paulo,BR';
+  const cityName = val.split(' - ')[0].trim();
+  return cityName.normalize('NFD').replace(/[\u0300-\u036f]/g,'') + ',BR';
+}
+
+const WX_EMOJI = { Clear:'☀️', Clouds:'⛅', Rain:'🌧️', Drizzle:'🌦️', Thunderstorm:'⛈️', Snow:'❄️', Mist:'🌫️', Fog:'🌫️', Haze:'🌫️', Smoke:'🌫️' };
+
+// ========================
+// WEATHER: TIME OF DAY
+// ========================
+function getTimeState(h) {
+  if (h >= 5.5 && h < 7)    return 'dawn';
+  if (h >= 7   && h < 11)   return 'morning';
+  if (h >= 11  && h < 14)   return 'midday';
+  if (h >= 14  && h < 17)   return 'afternoon';
+  if (h >= 17  && h < 18.5) return 'sunset';
+  if (h >= 18.5 && h < 20)  return 'dusk';
+  return 'night';
+}
+
+function positionSun(h) {
+  const sun = document.getElementById('wxSun');
+  const rise = 6, set = 18;
+  if (h < rise || h > set) { sun.style.opacity = '0'; return; }
+  const progress = (h - rise) / (set - rise);         // 0→1 sunrise→sunset
+  const arc      = Math.sin(progress * Math.PI);       // 0→1→0
+  const leftPct  = 5 + progress * 90;                  // 5%→95% L→R
+  const topPx    = Math.max(4, (120 * (1 - arc * 0.82)) - 10); // high at noon
+  sun.style.left   = leftPct + '%';
+  sun.style.top    = topPx + 'px';
+  sun.style.right  = 'auto';
+  sun.style.transform = '';
+  sun.style.opacity = '1';
+  // Warm color at dawn/sunset, white-yellow at midday
+  const warmth = Math.max(
+    1 - Math.min(1, Math.abs(progress) * 8),
+    1 - Math.min(1, Math.abs(progress - 1) * 8)
+  );
+  if (warmth > 0.05) {
+    sun.style.background  = 'radial-gradient(circle, #fff0b0 12%, #ff8010 52%, #e03008 100%)';
+    sun.style.boxShadow   = '0 0 28px 10px rgba(255,110,0,0.55), 0 0 55px 26px rgba(240,60,0,0.2)';
+  } else {
+    sun.style.background  = 'radial-gradient(circle, #fff7a0 20%, #ffd030 55%, #ffaa00 100%)';
+    sun.style.boxShadow   = '0 0 30px 14px rgba(255,210,0,0.5), 0 0 60px 30px rgba(255,180,0,0.2)';
+  }
+}
+
+function applyWxScene(condMain, hourLocal) {
+  const scene  = document.getElementById('wxScene');
+  const moon   = document.getElementById('wxMoon');
+  const cloudA = document.getElementById('wxCloudA');
+  const cloudB = document.getElementById('wxCloudB');
+  const rain   = document.getElementById('wxRain');
+  const stars  = document.getElementById('wxStars');
+  const cond   = condMain.toLowerCase();
+  const ts     = getTimeState(hourLocal);
+  const isNight = ts === 'night' || ts === 'dusk';
+  const isRainy = cond === 'rain' || cond === 'drizzle';
+  const isThunder = cond === 'thunderstorm';
+  const isCloudy  = ['clouds','mist','fog','haze','smoke'].includes(cond);
+
+  // Sky class: weather + night combinations use dedicated photo backgrounds
+  if (isThunder) {
+    scene.className = isNight ? 'wx-scene wx-night-storm' : 'wx-scene wx-storm';
+  } else if (isRainy) {
+    scene.className = isNight ? 'wx-scene wx-night-rainy' : 'wx-scene wx-rainy';
+  } else if (isCloudy) {
+    scene.className = isNight ? 'wx-scene wx-night-cloudy' : 'wx-scene wx-cloudy';
+  } else {
+    scene.className = 'wx-scene wx-' + ts;
+  }
+
+  positionSun(hourLocal);
+  moon.style.opacity   = isNight ? '1' : '0';
+  stars.style.opacity  = ts === 'night' ? '1' : ts === 'dusk' ? '0.5' : '0';
+  rain.style.opacity   = (isRainy || isThunder) ? '1' : '0';
+  cloudA.style.opacity = isThunder || isRainy ? '1' : isCloudy ? '0.95' : isNight ? '0.12' : '0.22';
+  cloudB.style.opacity = isThunder || isRainy ? '0.9' : isCloudy ? '0.85' : isNight ? '0.08' : '0.14';
+}
+
+// ========================
+// WEATHER: HOURLY
+// ========================
+function renderHourly(list) {
+  const el = document.getElementById('wxHourly');
+  if (!list || !list.length) { el.innerHTML = ''; return; }
+  el.innerHTML = list.slice(0, 9).map(item => {
+    const dt   = new Date(item.dt * 1000);
+    const h    = dt.getHours().toString().padStart(2,'0') + 'H';
+    const temp = Math.round(item.main.temp);
+    const emoji = WX_EMOJI[item.weather[0].main] || '🌤️';
+    const pop  = item.pop ? Math.round(item.pop * 100) : 0;
+    return `<div class="wx-hour-item">
+      <div class="wx-hour-time">${h}</div>
+      <div class="wx-hour-icon">${emoji}</div>
+      <div class="wx-hour-temp">${temp}°</div>
+      ${pop > 15 ? `<div class="wx-hour-pop">💧${pop}%</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ========================
+// WEATHER: 5-DAY FORECAST
+// ========================
+function renderDailyForecast(list, todayHi, todayLo) {
+  const el = document.getElementById('wxDaily');
+  if (!el || !list) return;
+  const PT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const byDay = {};
+  list.forEach(item => {
+    const d = new Date(item.dt * 1000);
+    const key = d.toDateString();
+    if (!byDay[key]) byDay[key] = { items:[], date:d };
+    byDay[key].items.push(item);
+  });
+  const days = Object.values(byDay).slice(0, 5);
+  const today = new Date().toDateString();
+  el.innerHTML = days.map(day => {
+    const isToday = day.date.toDateString() === today;
+    const temps = day.items.map(e => e.main.temp);
+    // For today, prefer the hi/lo calculated from all known data points (passed in)
+    const hi = isToday && todayHi != null ? todayHi : Math.round(Math.max(...temps));
+    const lo = isToday && todayLo != null ? todayLo : Math.round(Math.min(...temps));
+    const mid   = day.items[Math.floor(day.items.length / 2)];
+    const emoji = WX_EMOJI[mid.weather[0].main] || '🌤️';
+    const pop   = Math.round(Math.max(...day.items.map(e => (e.pop||0)*100)));
+    const name  = isToday ? 'Hoje' : PT[day.date.getDay()];
+    return `<div class="wx-day-row">
+      <span class="wx-day-name">${name}</span>
+      <span class="wx-day-icon">${emoji}</span>
+      <span class="wx-day-pop">${pop > 10 ? `💧${pop}%` : ''}</span>
+      <span class="wx-day-temps"><span class="wx-day-hi">${hi}°</span><span class="wx-day-lo">${lo}°</span></span>
+    </div>`;
+  }).join('');
+}
+
+// ========================
+// WEATHER: AGRO METRICS
+// ========================
+function renderWxMetrics(temp, humidity, wind, pressure, condMain) {
+  const el = document.getElementById('wxMetrics');
+  if (!el) return;
+  const cond = condMain.toLowerCase();
+  const isRainy = ['rain','drizzle','thunderstorm'].includes(cond);
+
+  // Dew point (Magnus approx.)
+  const dew = Math.round(temp - ((100 - humidity) / 5));
+
+  // Spray window
+  let spray, sprayC;
+  if (isRainy)       { spray = 'Não recomendado'; sprayC = 'wx-alert'; }
+  else if (wind > 4) { spray = `Aguardar (${wind.toFixed(1)} m/s)`; sprayC = 'wx-warn'; }
+  else if (temp > 35){ spray = 'Evitar (calor)'; sprayC = 'wx-warn'; }
+  else if (humidity > 82){ spray = 'Atenção (U>82%)'; sprayC = 'wx-warn'; }
+  else               { spray = 'Janela favorável'; sprayC = 'wx-good'; }
+
+  // Fungal disease pressure
+  const riskScore = (humidity > 80 ? 2 : humidity > 65 ? 1 : 0) + (temp > 18 && temp < 34 ? 1 : 0) + (isRainy ? 2 : 0);
+  const [disease, diseaseC] = riskScore >= 4 ? ['Alto — fungos','wx-alert'] : riskScore >= 2 ? ['Moderado','wx-warn'] : ['Baixo','wx-good'];
+
+  // N volatilization risk (ureia) — core to fertilizer business
+  let nVolat, nVolatC;
+  if (temp > 30 && humidity < 50) { nVolat = 'Alto (>30°C seco)'; nVolatC = 'wx-alert'; }
+  else if (temp > 25 || isRainy)  { nVolat = 'Moderado'; nVolatC = 'wx-warn'; }
+  else                            { nVolat = 'Baixo — ideal NH₃'; nVolatC = 'wx-good'; }
+
+  // Pressure trend
+  const pressT  = pressure > 1013 ? 'Alta — estável' : pressure > 1000 ? 'Normal' : 'Baixa — chuva';
+  const pressCl = pressure > 1013 ? 'wx-good' : pressure > 1000 ? 'wx-info' : 'wx-warn';
+
+  // Frost risk
+  const frost = temp < 2 ? 'Geada iminente!' : temp < 6 && humidity > 70 ? 'Risco de geada' : '';
+
+  // GDD (Growing Degree Day, base 10°C)
+  const gdd = Math.max(0, ((temp + (temp - 3)) / 2) - 10);
+
+  el.innerHTML = `
+    <div class="wx-metric-item ${sprayC}">
+      <span class="wx-metric-label">Pulverização</span>
+      <span class="wx-metric-value">${spray}</span>
+      <span class="wx-metric-sub">Vento ${wind.toFixed(1)} m/s · U ${humidity}%</span>
+    </div>
+    <div class="wx-metric-item ${diseaseC}">
+      <span class="wx-metric-label">Pressão de Doença</span>
+      <span class="wx-metric-value">${disease}</span>
+      <span class="wx-metric-sub">Orvalho ${dew}°C · U ${humidity}%</span>
+    </div>
+    <div class="wx-metric-item ${nVolatC}">
+      <span class="wx-metric-label">Volat. Nitrogênio</span>
+      <span class="wx-metric-value">${nVolat}</span>
+      <span class="wx-metric-sub">Risco ureia céu aberto${frost ? '<br>' + frost : ''}</span>
+    </div>
+    <div class="wx-metric-item ${pressCl}">
+      <span class="wx-metric-label">Pressão Atm.</span>
+      <span class="wx-metric-value">${pressure} hPa</span>
+      <span class="wx-metric-sub">${pressT} · GDD≈${gdd.toFixed(1)}</span>
+    </div>
+    <div class="wx-metric-item wx-info" id="wxAQIItem" style="grid-column:1/-1">
+      <span class="wx-metric-label">Qualidade do Ar</span>
+      <span class="wx-metric-value" id="wxAQI">Carregando...</span>
+      <span class="wx-metric-sub" id="wxAQISub"></span>
+    </div>`;
+}
+
+function applyAQI(aqData) {
+  const el  = document.getElementById('wxAQI');
+  const sub = document.getElementById('wxAQISub');
+  const item = document.getElementById('wxAQIItem');
+  if (!el || !aqData?.list?.[0]) { if (el) el.textContent = 'Indisponível'; return; }
+  const aqi   = aqData.list[0].main.aqi;
+  const comp  = aqData.list[0].components;
+  const labels  = ['','Boa','Razoável','Moderada','Ruim','Muito Ruim'];
+  const classes = ['','wx-good','wx-good','wx-warn','wx-alert','wx-alert'];
+  if (el)  el.innerHTML = `<b>${labels[aqi] || '—'}</b> (IQA ${aqi}/5)`;
+  if (sub) sub.innerHTML = `NO₂ ${comp.no2?.toFixed(1)||'—'} · PM₂.₅ ${comp.pm2_5?.toFixed(1)||'—'}${comp.nh3 > 0.5 ? ` · NH₃ ${comp.nh3?.toFixed(1)} µg/m³` : ''}`;
+  if (item) {
+    item.classList.remove('wx-good','wx-warn','wx-alert','wx-info');
+    item.classList.add(classes[aqi] || 'wx-info');
+  }
+}
+
+function wxMainTip(temp, humidity, wind, condMain) {
+  const cond = condMain.toLowerCase();
+  if (cond === 'thunderstorm') return '<b>Trovoada</b> — suspender todas as operações no campo';
+  if (cond === 'rain' || cond === 'drizzle') {
+    if (humidity > 85) return '<b>Alta umidade</b> — risco elevado de fungos. Monitorar lavoura';
+    return '<b>Evitar pulverização</b> e maquinário pesado no solo';
+  }
+  if (wind > 5) return `<b>Vento ${wind.toFixed(1)} m/s</b> — aguardar calmaria para pulverizar`;
+  if (temp > 36) return `<b>${temp}°C</b> — estresse hídrico. Priorizar irrigação e evitar aplicações`;
+  if (temp < 6)  return '<b>Risco de geada</b> — proteger culturas sensíveis';
+  if (humidity < 35) return '<b>Umidade baixa</b> — monitorar irrigação. Favorável à colheita de grãos';
+  if (wind <= 3 && temp >= 15 && temp <= 32) return '<b>Condições ideais</b> para pulverização e operações de campo';
+  return '<b>Condições favoráveis</b> para desenvolvimento das culturas';
+}
+
+// ========================
+// WEATHER: MAIN LOADER
+// ========================
+function loadWeatherByCity() {
+  const input    = document.getElementById('city-input');
+  const rawVal   = input ? input.value.trim() : '';
+  const cityQ    = cityInputToQuery(rawVal || 'São Paulo - SP');
+  const apiKey   = 'bbf01bd08dea499c87355686dc1fa2b6';
+  const nowH     = new Date().getHours() + new Date().getMinutes() / 60;
+
+  document.getElementById('wxCity').textContent  = '...';
+  document.getElementById('wxTemp').textContent  = '--°';
+  document.getElementById('wxDesc').textContent  = 'Carregando...';
+  document.getElementById('wxHiLow').textContent = '';
+  document.getElementById('wxHourly').innerHTML  = '<div class="wx-loading">Buscando previsão...</div>';
+  document.getElementById('wxAgroTip').innerHTML = 'Aguardando dados climáticos...';
+  document.getElementById('wxDaily').innerHTML   = '';
+  document.getElementById('wxMetrics').innerHTML = '';
+
+  fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${cityQ}&appid=${apiKey}&units=metric&lang=pt_br&cnt=40`, { signal: AbortSignal.timeout(12000) })
+    .then(r => r.json())
+    .then(data => {
+      if (!data?.list) throw new Error('no data');
+      const cur    = data.list[0];
+      const temp   = Math.round(cur.main.temp);
+      const feels  = Math.round(cur.main.feels_like);
+      const hum    = cur.main.humidity;
+      const wind   = cur.wind.speed;
+      const press  = cur.main.pressure;
+      const desc   = cur.weather[0].description;
+      const cond   = cur.weather[0].main;
+      const city   = data.city.name;
+      const lat    = data.city.coord.lat;
+      const lon    = data.city.coord.lon;
+
+      // Hi/Lo from today
+      const todayTemps = data.list
+        .filter(e => new Date(e.dt*1000).toDateString() === new Date().toDateString())
+        .map(e => e.main.temp);
+      const hi = todayTemps.length ? Math.round(Math.max(...todayTemps)) : temp + 3;
+      const lo = todayTemps.length ? Math.round(Math.min(...todayTemps)) : temp - 4;
+
+      // Use actual local hour for time-of-day animation
+      applyWxScene(cond, nowH);
+
+      document.getElementById('wxCity').textContent  = city;
+      document.getElementById('wxTemp').textContent  = `${temp}°`;
+      document.getElementById('wxDesc').textContent  = desc.charAt(0).toUpperCase() + desc.slice(1);
+      document.getElementById('wxHiLow').innerHTML   = `↑${hi}° ↓${lo}° &nbsp;·&nbsp; Sensação ${feels}°`;
+      document.getElementById('wxAgroTip').innerHTML = wxMainTip(temp, hum, wind, cond);
+
+      renderHourly(data.list);
+      renderDailyForecast(data.list, hi, lo);
+      renderWxMetrics(temp, hum, wind, press, cond);
+
+      // Air Quality API (lat/lon from forecast response)
+      fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`, { signal: AbortSignal.timeout(8000) })
+        .then(r => r.json())
+        .then(applyAQI)
+        .catch(() => { const el = document.getElementById('wxAQI'); if (el) el.textContent = 'Indisponível'; });
+    })
+    .catch(() => {
+      document.getElementById('wxDesc').textContent  = '⚠️ Indisponível';
+      document.getElementById('wxAgroTip').innerHTML = 'Verifique a conexão ou tente outra cidade.';
+      applyWxScene('Clear', new Date().getHours());
+    });
+}
+
+// Calculadora personalizada
+function calcPersonalizado() {
+  const cultura = document.getElementById('calc-cultura').value;
+  const area = parseFloat(document.getElementById('calc-area').value);
+  const solo = document.getElementById('calc-solo').value;
+  const prodEsperada = parseFloat(document.getElementById('calc-prod-esperada').value);
+  const prodHistorico = parseFloat(document.getElementById('calc-prod-historico').value);
+
+  if (!cultura || !area || !prodEsperada) {
+    alert('Preencha todos os campos obrigatórios.');
+    return;
+  }
+
+  // Lógica personalizada baseada em solo e produtividade
+  let ajuste = 1;
+  if (solo === 'arenoso') ajuste = 1.2; // Solo arenoso precisa mais fertilizantes
+  if (prodEsperada > prodHistorico) ajuste = 1.1; // Aumentar para produtividade maior
+
+  // Calcular baseado na cultura
+  const baseData = CULTURES[cultura];
+  if (!baseData) return;
+
+  // Simular cálculo personalizado
+  const produtos = baseData.detail.formulas.map(formula => ({
+    name: formula,
+    dose: Math.round(area * ajuste * (Math.random() * 50 + 20)),
+    unit: 'kg/ha'
+  }));
+
+  // Exibir resultados personalizados
+  const resultsEl = document.getElementById('calc-results');
+  resultsEl.innerHTML = produtos.map(p => `
+    <div class="calc-product-row">
+      <div class="calc-product-name">${p.name}</div>
+      <div class="calc-product-dose">${p.dose} ${p.unit}</div>
+    </div>
+  `).join('');
+
+  // Pitch personalizado
+  const pitchEl = document.getElementById('calc-pitch');
+  pitchEl.innerHTML = `<span class="pitch-label">Ideia</span>Baseado no seu solo ${solo} e meta de produtividade de ${prodEsperada} t/ha, recomendamos otimizar a dose para maximizar o ROI. Consulte nossa equipe para análise detalhada.`;
+  pitchEl.style.display = 'block';
+}
+
+// Gráfico de produtividade
+function renderChart() {
+  const ctx = document.getElementById('produtividadeChart').getContext('2d');
+  const data = {
+    labels: ['Soja', 'Milho', 'Café', 'Cana', 'Algodão', 'Citros', 'Arroz', 'Feijão', 'Trigo', 'Coco'],
+    datasets: [{
+      label: 'Produtividade Média (t/ha)',
+      data: [4.5, 6.8, 1.8, 73, 4.1, 32, 6.0, 1.1, 3.0, 1.4],
+      backgroundColor: [
+        '#3a8a2e', '#c47c08', '#6b2f0e', '#1a6e7a', '#8b3a6b',
+        '#c45e00', '#5a7a3a', '#7a3a1a', '#b8960a', '#2e6b4a'
+      ],
+      borderWidth: 1
+    }]
+  };
+
+  // Custom plugin: draws value labels above each bar
+  const dataLabelsPlugin = {
+    id: 'dataLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      const vals = chart.data.datasets[0].data;
+      const bgColors = chart.data.datasets[0].backgroundColor;
+      meta.data.forEach((bar, i) => {
+        const val = vals[i];
+        const label = val >= 10 ? val + '' : val.toFixed(1);
+        ctx.save();
+        ctx.font = '600 10px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = bgColors[i];
+        ctx.fillText(label, bar.x, bar.y - 3);
+        ctx.restore();
+      });
+    }
+  };
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: data,
+    plugins: [dataLabelsPlugin],
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: { display: false },
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#ede0cc',
+          titleColor: '#2c1a08',
+          bodyColor: '#8a6a45',
+          borderColor: 'rgba(90,60,20,0.2)',
+          borderWidth: 1,
+          titleFont: { family: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif', weight: '600' },
+          bodyFont: { family: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif' },
+          callbacks: {
+            label: (ctx) => ` ${ctx.parsed.y} t/ha`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(90,60,20,0.06)' },
+          ticks: { font: { family: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif', size: 10 }, color: '#8a6a45' }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif', size: 10 }, color: '#8a6a45' }
+        }
+      }
+    }
+  });
+}
+
+// Mapa de estação primária por cultura
+// Seca (Abr–Set): culturas cuja COLHEITA principal ocorre na estação seca
+// Chuva (Out–Mar): culturas cuja SEMEADURA principal ocorre na estação chuvosa
+const SEASON_PRIMARY = {
+  soja:    'chuva',   // semeadura Out–Dez, colheita Jan–Abr
+  milho:   'chuva',   // semeadura Set–Nov (1ª safra) / Jan–Mar (safrinha)
+  cafe:    'seca',    // colheita Abr–Set (pico Jun–Ago)
+  cana:    'seca',    // colheita Abr–Nov (pico Jun–Set)
+  algodao: 'seca',    // colheita Jun–Set
+  citros:  'seca',    // colheita Jun–Nov
+  arroz:   'chuva',   // semeadura Out–Dez
+  feijao:  'chuva',   // semeaduras Out–Nov e Jan–Mar (1ª e 2ª safras)
+  trigo:   'seca',    // semeadura Abr–Jun, colheita Set–Nov
+  coco:    'ambas',   // perene — produção contínua
+};
+
+// Filtros por estação
+let activeSeason = null;
+
+function filterBySeason(season) {
+  // Clique na mesma estação → limpa
+  if (activeSeason === season) {
+    activeSeason = null;
+    clearAll();
+    return;
+  }
+
+  activeSeason = season;
+
+  // Culturas com estação primária correspondente
+  const culturasAtivas = Object.keys(CULTURES).filter(cId =>
+    SEASON_PRIMARY[cId] === season || SEASON_PRIMARY[cId] === 'ambas'
+  );
+
+  activeCultures = new Set(culturasAtivas);
+
+  // Atualizar botões de cultura
+  document.querySelectorAll('[data-culture]').forEach(btn => {
+    const c = btn.dataset.culture;
+    btn.className = 'culture-btn';
+    if (activeCultures.has(c)) {
+      btn.classList.add('active-' + c);
+    } else {
+      btn.classList.add('dimmed');
+    }
+  });
+
+  // Destacar botão da estação ativa
+  const corSeca  = { border: '#c47c08', text: '#c47c08', bg: 'rgba(196,124,8,0.12)' };
+  const corChuva = { border: '#1a6e7a', text: '#1a6e7a', bg: 'rgba(26,110,122,0.12)' };
+  document.querySelectorAll('[data-season]').forEach(btn => {
+    btn.className = 'culture-btn';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    btn.style.background = '';
+    if (btn.dataset.season === season) {
+      const cor = season === 'seca' ? corSeca : corChuva;
+      btn.style.borderColor = cor.border;
+      btn.style.color       = cor.text;
+      btn.style.background  = cor.bg;
+    } else {
+      btn.classList.add('dimmed');
+    }
+  });
+
+  updateMap();
+  updateRightPanel();
+}
+
+// Drill-down nos cards
+function drillDown(cultura) {
+  // Apenas expande — sem interrupção por alert
+}
+
+// Inicializar tudo
+document.addEventListener('DOMContentLoaded', function() {
+  const cityInput = document.getElementById('city-input');
+  if (cityInput && !cityInput.value) cityInput.value = 'São Paulo - SP'; // matches datalist "São Paulo - SP"
+  loadKPIs();
+  renderChart();
+});
 
 // =============================================
 // COMPARATIVO DATA
@@ -1924,13 +4028,13 @@ function showComp(key) {
         </div>
       </div>
     </div>
-    <div class="comp-winner">✅ <strong>Conclusão técnica:</strong> ${d.winner}</div>
+    <div class="comp-winner"><strong>Conclusão técnica:</strong> ${d.winner}</div>
     <div class="comp-culturas">
       <div class="comp-culturas-title">Quando usar este argumento — por cultura</div>
       ${d.culturas.map(c => `<div class="comp-cultura-row"><span style="min-width:180px;font-weight:500;color:var(--text)">${c.cultura}</span><span style="color:var(--muted)">${c.argumento}</span></div>`).join('')}
     </div>
     <div class="comp-pitch-box">
-      <span class="pitch-label">💬 Script de pitch — use em campo</span>
+      <span class="pitch-label">Ideia</span>
       <div class="comp-pitch-text">"${d.pitch}"</div>
     </div>
   `;
@@ -1943,5 +4047,31 @@ updateMap();
 updateRightPanel();
 showComp('nitrato');
 </script>
+
+<footer style="
+  border-top: 1px solid rgba(90,60,20,0.12);
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 16px 40px;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.8;
+">
+  <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+    <div>
+      <span style="font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);display:block;margin-bottom:4px">Fontes dos dados</span>
+      <a href="https://www.conab.gov.br/info-agro/safras" target="_blank" style="color:var(--muted);text-decoration:none">CONAB — Safras e área plantada</a> ·
+      <a href="https://indicadores.agricultura.gov.br/agrostat/index.htm" target="_blank" style="color:var(--muted);text-decoration:none">MAPA / AgroStat — Exportações do agronegócio</a> ·
+      <a href="https://www.cepea.esalq.usp.br/br/indicador.aspx" target="_blank" style="color:var(--muted);text-decoration:none">CEPEA / ESALQ — Cotações de referência</a> ·
+      <a href="https://openweathermap.org" target="_blank" style="color:var(--muted);text-decoration:none">OpenWeatherMap — Dados climáticos</a> ·
+      <a href="https://news.google.com" target="_blank" style="color:var(--muted);text-decoration:none">Google News — Notícias</a>
+    </div>
+    <div style="margin-left:auto;text-align:right;white-space:nowrap">
+      <span style="font-weight:600;color:var(--text)">AgroMapa</span> · Estimativas 2025/26 · Consulte fontes oficiais para decisões comerciais
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
