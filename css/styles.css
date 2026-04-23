@@ -1153,24 +1153,24 @@ a.kpi-link:hover { background: rgba(184,92,26,0.06); }
   overflow: hidden;
   flex-shrink: 0;
   transition: background 0s;
-  background: url('scene-midday.jpg') center/cover no-repeat;
+  background: url('../scene-midday.jpg') center/cover no-repeat;
 }
 /* Time-of-day photo backgrounds */
-.wx-scene.wx-dawn         { background: url('scene-dawn.jpg') center/cover no-repeat; }
-.wx-scene.wx-morning      { background: url('scene-morning.jpg') center/cover no-repeat; }
-.wx-scene.wx-midday       { background: url('scene-midday.jpg') center/cover no-repeat; }
-.wx-scene.wx-afternoon    { background: url('scene-afternoon.jpg') center/cover no-repeat; }
-.wx-scene.wx-sunset       { background: url('scene-sunset.jpg') center/cover no-repeat; }
-.wx-scene.wx-dusk         { background: url('scene-dusk.jpg') center/cover no-repeat; }
-.wx-scene.wx-night        { background: url('scene-night.jpg') center/cover no-repeat; }
+.wx-scene.wx-dawn         { background: url('../scene-dawn.jpg') center/cover no-repeat; }
+.wx-scene.wx-morning      { background: url('../scene-morning.jpg') center/cover no-repeat; }
+.wx-scene.wx-midday       { background: url('../scene-midday.jpg') center/cover no-repeat; }
+.wx-scene.wx-afternoon    { background: url('../scene-afternoon.jpg') center/cover no-repeat; }
+.wx-scene.wx-sunset       { background: url('../scene-sunset.jpg') center/cover no-repeat; }
+.wx-scene.wx-dusk         { background: url('../scene-dusk.jpg') center/cover no-repeat; }
+.wx-scene.wx-night        { background: url('../scene-night.jpg') center/cover no-repeat; }
 /* Weather overrides */
-.wx-scene.wx-cloudy       { background: url('scene-cloudy.jpg') center/cover no-repeat; }
-.wx-scene.wx-rainy        { background: url('scene-rainy.jpg') center/cover no-repeat; }
-.wx-scene.wx-storm        { background: url('scene-storm.jpg') center/cover no-repeat; }
+.wx-scene.wx-cloudy       { background: url('../scene-cloudy.jpg') center/cover no-repeat; }
+.wx-scene.wx-rainy        { background: url('../scene-rainy.jpg') center/cover no-repeat; }
+.wx-scene.wx-storm        { background: url('../scene-storm.jpg') center/cover no-repeat; }
 /* Night + weather variants */
-.wx-scene.wx-night-cloudy { background: url('scene-night-cloudy.jpg') center/cover no-repeat; }
-.wx-scene.wx-night-rainy  { background: url('scene-night-rainy.jpg') center/cover no-repeat; }
-.wx-scene.wx-night-storm  { background: url('scene-night-storm.jpg') center/cover no-repeat; }
+.wx-scene.wx-night-cloudy { background: url('../scene-night-cloudy.jpg') center/cover no-repeat; }
+.wx-scene.wx-night-rainy  { background: url('../scene-night-rainy.jpg') center/cover no-repeat; }
+.wx-scene.wx-night-storm  { background: url('../scene-night-storm.jpg') center/cover no-repeat; }
 
 /* Hide animated sky elements — photos provide sun/moon/stars/clouds */
 .wx-sun, .wx-moon, .wx-stars, .wx-cloud { display: none !important; }

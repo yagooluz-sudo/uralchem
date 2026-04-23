@@ -727,20 +727,22 @@ function timeAgo(dateStr) {
 // =============================================
 async function fetchRSS(rssUrl) {
   const enc = encodeURIComponent(rssUrl);
-  const tries = [
-    () => fetch(`https://api.allorigins.win/get?url=${enc}`,       { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.json().then(j => j?.contents) : null),
-    () => fetch(`https://api.allorigins.win/raw?url=${enc}`,       { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.text() : null),
-    () => fetch(`https://corsproxy.io/?url=${enc}`,                { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.text() : null),
-    () => fetch(`https://api.codetabs.com/v1/proxy?quest=${enc}`,  { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.text() : null),
-    () => fetch(`https://thingproxy.freeboard.io/fetch/${rssUrl}`, { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.text() : null),
+  const promises = [
+    fetch(`https://api.allorigins.win/get?url=${enc}`,       { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json().then(j => j?.contents) : null),
+    fetch(`https://api.allorigins.win/raw?url=${enc}`,       { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.text() : null),
+    fetch(`https://corsproxy.io/?url=${enc}`,                { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.text() : null),
+    fetch(`https://api.codetabs.com/v1/proxy?quest=${enc}`,  { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.text() : null),
+    fetch(`https://thingproxy.freeboard.io/fetch/${rssUrl}`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.text() : null),
   ];
-  for (const fn of tries) {
-    try {
-      const t = await fn();
-      if (t && (t.includes('<item>') || t.includes('<item '))) return t;
-    } catch (_) {}
-  }
-  return null;
+  return new Promise(resolve => {
+    let pending = promises.length;
+    promises.forEach(p => {
+      p.then(t => {
+        if (t && (t.includes('<item>') || t.includes('<item '))) resolve(t);
+        else if (--pending === 0) resolve(null);
+      }).catch(() => { if (--pending === 0) resolve(null); });
+    });
+  });
 }
 
 function parseRSSItems(text, sourceName, sourceColor, maxItems) {
@@ -839,11 +841,8 @@ async function carregarNoticias() {
     ]},
   ];
 
-  const allItems = [];
-  for (const p of portais) {
-    let got = false;
+  async function fetchPortal(p) {
     for (const url of p.urls) {
-      if (got) break;
       try {
         const text = await fetchRSS(url);
         if (text) {
@@ -851,11 +850,15 @@ async function carregarNoticias() {
           const items = isGN
             ? parseGoogleNewsItems(text, 5).map(i => ({ ...i, source: p.name, color: p.color }))
             : parseRSSItems(text, p.name, p.color, 5);
-          if (items.length > 0) { allItems.push(...items); got = true; }
+          if (items.length > 0) return items;
         }
       } catch (_) {}
     }
+    return [];
   }
+
+  const results  = await Promise.all(portais.map(fetchPortal));
+  const allItems = results.flat();
 
   if (allItems.length === 0) {
     try {
