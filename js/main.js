@@ -816,6 +816,16 @@ const WX_EMOJI = {
   Thunderstorm: '⛈️', Snow: '❄️', Mist: '🌫️', Fog: '🌫️', Haze: '🌫️', Smoke: '🌫️'
 };
 
+const WMO_EMOJI = {
+  0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️',
+  45:'🌫️', 48:'🌫️',
+  51:'🌦️', 53:'🌦️', 55:'🌦️',
+  61:'🌧️', 63:'🌧️', 65:'🌧️',
+  71:'❄️', 73:'❄️', 75:'❄️',
+  80:'🌧️', 81:'🌧️', 82:'🌧️',
+  95:'⛈️', 96:'⛈️', 99:'⛈️'
+};
+
 function getTimeState(h) {
   if (h >= 5.5 && h < 7)    return 'dawn';
   if (h >= 7   && h < 11)   return 'morning';
@@ -886,6 +896,28 @@ function renderHourly(list) {
     const temp = Math.round(item.main.temp);
     const emoji = WX_EMOJI[item.weather[0].main] || '🌤️';
     const pop   = item.pop ? Math.round(item.pop * 100) : 0;
+    return `<div class="wx-hour-item">
+      <div class="wx-hour-time">${h}</div>
+      <div class="wx-hour-icon">${emoji}</div>
+      <div class="wx-hour-temp">${temp}°</div>
+      ${pop > 15 ? `<div class="wx-hour-pop">💧${pop}%</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderHourlyOpenMeteo(data) {
+  const el = document.getElementById('wxHourly');
+  if (!data?.hourly?.time) return;
+  const { time, temperature_2m: temps, weathercode: codes, precipitation_probability: pops } = data.hourly;
+  const nowStr = new Date().toISOString().slice(0, 13);
+  let start = time.findIndex(t => t.startsWith(nowStr));
+  if (start < 0) start = 0;
+  el.innerHTML = time.slice(start, start + 24).map((t, i) => {
+    const idx  = start + i;
+    const h    = t.slice(11, 13) + 'H';
+    const temp = Math.round(temps[idx]);
+    const emoji = WMO_EMOJI[codes[idx]] || '🌤️';
+    const pop   = pops?.[idx] || 0;
     return `<div class="wx-hour-item">
       <div class="wx-hour-time">${h}</div>
       <div class="wx-hour-icon">${emoji}</div>
@@ -1055,8 +1087,11 @@ function loadWeatherByCity() {
       document.getElementById('wxHiLow').innerHTML   = `↑${hi}° ↓${lo}° &nbsp;·&nbsp; Sensação ${feels}°`;
       document.getElementById('wxAgroTip').innerHTML = wxMainTip(temp, hum, wind, cond);
 
-      renderHourly(data.list);
       renderDailyForecast(data.list, hi, lo);
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weathercode,precipitation_probability&forecast_days=2&timezone=auto`, { signal: AbortSignal.timeout(8000) })
+        .then(r => r.json())
+        .then(renderHourlyOpenMeteo)
+        .catch(() => renderHourly(data.list));
       renderWxMetrics(temp, hum, wind, press, cond);
 
       fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`, { signal: AbortSignal.timeout(8000) })
