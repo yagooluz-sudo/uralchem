@@ -569,7 +569,9 @@ async function fetchDollarRate() {
     });
     if (!r.ok) return null;
     const data = await r.json();
-    const rate   = parseFloat(data.USDBRL.bid);
+    const bid    = parseFloat(data.USDBRL.bid);
+    const ask    = parseFloat(data.USDBRL.ask);
+    const rate   = (bid + ask) / 2;
     const change = parseFloat(data.USDBRL.pctChange);
     return { rate, change };
   } catch (_) { return null; }
