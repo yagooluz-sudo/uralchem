@@ -796,45 +796,7 @@ async function carregarNoticias() {
   const feedEl = document.getElementById('news-feed');
   feedEl.innerHTML = '<div class="alert-content" style="font-size:11px;color:var(--muted)">Carregando notícias...</div>';
 
-  const portais = [
-    { name: 'Not. Agrícolas', color: '#3a8a2e', urls: [
-      'https://www.noticiasagricolas.com.br/rss.xml',
-      'https://www.noticiasagricolas.com.br/feed/',
-      'https://news.google.com/rss/search?q=site:noticiasagricolas.com.br+agronegocio&hl=pt-BR&gl=BR&ceid=BR:pt-419',
-    ]},
-    { name: 'Canal Rural', color: '#c47c08', urls: [
-      'https://www.canalrural.com.br/feed/',
-      'https://news.google.com/rss/search?q=site:canalrural.com.br+agropecuaria&hl=pt-BR&gl=BR&ceid=BR:pt-419',
-    ]},
-    { name: 'Globo Rural', color: '#6b2f0e', urls: [
-      'https://globorural.globo.com/rss/',
-      'https://rss.globo.com/globo_rural.xml',
-      'https://news.google.com/rss/search?q=site:globorural.globo.com+agricultura&hl=pt-BR&gl=BR&ceid=BR:pt-419',
-    ]},
-    { name: 'Reuters Agro', color: '#cc1a1a', urls: [
-      'https://feeds.reuters.com/reuters/commoditiesNews',
-      'https://news.google.com/rss/search?q=reuters+agronegocio+soja+milho+boi&hl=pt-BR&gl=BR&ceid=BR:pt-419',
-    ]},
-  ];
-
-  async function fetchPortal(p) {
-    for (const url of p.urls) {
-      const items = await fetchNewsItems(url, p.name, p.color);
-      if (items.length > 0) return items;
-    }
-    return [];
-  }
-
-  const results  = await Promise.all(portais.map(fetchPortal));
-  const allItems = results.flat();
-
-  if (allItems.length === 0) {
-    const fallback = await fetchNewsItems(
-      'https://news.google.com/rss/search?q=agroneg%C3%B3cio+soja+milho+boi+Brasil&hl=pt-BR&gl=BR&ceid=BR:pt-419',
-      null, null, 15
-    );
-    allItems.push(...fallback);
-  }
+  const allItems = await fetchNewsItems('https://www.canalrural.com.br/feed/', 'Canal Rural', '#c47c08', 10);
 
   if (allItems.length > 0) renderNewsItems(feedEl, allItems);
   else feedEl.innerHTML = '<div class="alert-content" style="font-size:11px">Não foi possível carregar as notícias.</div>';
