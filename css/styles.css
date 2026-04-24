@@ -1169,11 +1169,11 @@ a.kpi-link:hover { background: rgba(184,92,26,0.06); }
 .wx-scene.wx-dusk         { background: url('../scene-dusk.jpg') center/cover no-repeat; }
 .wx-scene.wx-night        { background: url('../scene-night.jpg') center/cover no-repeat; }
 /* Weather overrides */
-.wx-scene.wx-cloudy       { background: url('../scene-cloudy.png') center/cover no-repeat; }
+.wx-scene.wx-cloudy       { background: url('../scene-cloudy.jpg') center/cover no-repeat; }
 .wx-scene.wx-rainy        { background: url('../scene-rainy.jpg') center/cover no-repeat; }
 .wx-scene.wx-storm        { background: url('../scene-storm.jpg') center/cover no-repeat; }
 /* Night + weather variants */
-.wx-scene.wx-night-cloudy { background: url('../scene-cloudy-dusk.png') center/cover no-repeat; }
+.wx-scene.wx-night-cloudy { background: url('../scene-cloudy-dusk.jpg') center/cover no-repeat; }
 .wx-scene.wx-night-rainy  { background: url('../scene-night-rainy.jpg') center/cover no-repeat; }
 .wx-scene.wx-night-storm  { background: url('../scene-night-storm.jpg') center/cover no-repeat; }
 
