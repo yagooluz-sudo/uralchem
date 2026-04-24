@@ -725,43 +725,8 @@ function timeAgo(dateStr) {
 }
 
 // =============================================
-// NOTÍCIAS RSS
+// NOTÍCIAS RSS (via rss2json)
 // =============================================
-async function fetchRSS(rssUrl) {
-  const enc = encodeURIComponent(rssUrl);
-  const promises = [
-    fetch(`https://api.allorigins.win/get?url=${enc}`,       { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json().then(j => j?.contents) : null),
-    fetch(`https://api.allorigins.win/raw?url=${enc}`,       { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.text() : null),
-    fetch(`https://corsproxy.io/?url=${enc}`,                { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.text() : null),
-    fetch(`https://api.codetabs.com/v1/proxy?quest=${enc}`,  { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.text() : null),
-    fetch(`https://thingproxy.freeboard.io/fetch/${rssUrl}`, { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.text() : null),
-  ];
-  return new Promise(resolve => {
-    let pending = promises.length;
-    promises.forEach(p => {
-      p.then(t => {
-        if (t && (t.includes('<item>') || t.includes('<item '))) resolve(t);
-        else if (--pending === 0) resolve(null);
-      }).catch(() => { if (--pending === 0) resolve(null); });
-    });
-  });
-}
-
-function parseRSSItems(text, sourceName, sourceColor, maxItems) {
-  try {
-    const xml   = new DOMParser().parseFromString(text, 'text/xml');
-    const items = xml.querySelectorAll('item');
-    return Array.from(items).slice(0, maxItems).map(item => {
-      const title   = item.querySelector('title')?.textContent?.trim() || '';
-      const pubDate = item.querySelector('pubDate')?.textContent || '';
-      const descRaw = item.querySelector('description')?.textContent || '';
-      const linkEl  = new DOMParser().parseFromString(descRaw, 'text/html').querySelector('a');
-      const link    = linkEl?.href || item.querySelector('link')?.nextSibling?.textContent?.trim() || '#';
-      return { title, link, pubDate, source: sourceName, color: sourceColor };
-    }).filter(n => n.title);
-  } catch (_) { return []; }
-}
-
 const GN_SOURCE_COLORS = {
   'canal rural': '#c47c08', 'canalrural': '#c47c08',
   'globo rural': '#6b2f0e', 'globorural': '#6b2f0e',
@@ -781,17 +746,26 @@ function gnSourceColor(name) {
   return '#888';
 }
 
-function parseGoogleNewsItems(text, maxItems) {
+async function fetchNewsItems(rssUrl, sourceName, sourceColor, maxItems = 5) {
   try {
-    const xml   = new DOMParser().parseFromString(text, 'text/xml');
-    const items = xml.querySelectorAll('item');
-    return Array.from(items).slice(0, maxItems).map(item => {
-      const title   = item.querySelector('title')?.textContent?.trim() || '';
-      const pubDate = item.querySelector('pubDate')?.textContent || '';
-      const link    = item.querySelector('link')?.nextSibling?.textContent?.trim()
-                   || item.querySelector('link')?.textContent?.trim() || '#';
-      const srcName = item.querySelector('source')?.textContent?.trim() || '';
-      return { title, link, pubDate, source: srcName, color: gnSourceColor(srcName) };
+    const enc = encodeURIComponent(rssUrl);
+    const r   = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${enc}&count=${maxItems}`, {
+      signal: AbortSignal.timeout(7000)
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    if (data.status !== 'ok' || !data.items?.length) return [];
+    return data.items.map(item => {
+      let title  = item.title?.trim() || '';
+      let source = sourceName;
+      let color  = sourceColor;
+      if (!sourceName) {
+        const match = title.match(/\s+[-–]\s+([^-–]+)$/);
+        if (match) { source = match[1].trim(); title = title.replace(match[0], '').trim(); }
+        else source = 'Agro';
+        color = gnSourceColor(source);
+      }
+      return { title, link: item.link || '#', pubDate: item.pubDate || '', source, color };
     }).filter(n => n.title);
   } catch (_) { return []; }
 }
@@ -845,16 +819,8 @@ async function carregarNoticias() {
 
   async function fetchPortal(p) {
     for (const url of p.urls) {
-      try {
-        const text = await fetchRSS(url);
-        if (text) {
-          const isGN  = url.includes('news.google.com');
-          const items = isGN
-            ? parseGoogleNewsItems(text, 5).map(i => ({ ...i, source: p.name, color: p.color }))
-            : parseRSSItems(text, p.name, p.color, 5);
-          if (items.length > 0) return items;
-        }
-      } catch (_) {}
+      const items = await fetchNewsItems(url, p.name, p.color);
+      if (items.length > 0) return items;
     }
     return [];
   }
@@ -863,11 +829,11 @@ async function carregarNoticias() {
   const allItems = results.flat();
 
   if (allItems.length === 0) {
-    try {
-      const fallbackUrl = 'https://news.google.com/rss/search?q=agroneg%C3%B3cio+soja+milho+boi+Brasil&hl=pt-BR&gl=BR&ceid=BR:pt-419';
-      const text = await fetchRSS(fallbackUrl);
-      if (text) allItems.push(...parseGoogleNewsItems(text, 15));
-    } catch (_) {}
+    const fallback = await fetchNewsItems(
+      'https://news.google.com/rss/search?q=agroneg%C3%B3cio+soja+milho+boi+Brasil&hl=pt-BR&gl=BR&ceid=BR:pt-419',
+      null, null, 15
+    );
+    allItems.push(...fallback);
   }
 
   if (allItems.length > 0) renderNewsItems(feedEl, allItems);
