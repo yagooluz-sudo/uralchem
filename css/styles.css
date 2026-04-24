@@ -1445,70 +1445,94 @@ a.kpi-link:hover { background: rgba(184,92,26,0.06); }
 .personal-form .field-group { margin-bottom: 12px; }
 
 @media (max-width: 900px) {
-  /* HEADER */
-  header { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
-  .header-sub { display: none; }
-  .header-nav { margin-left: 0; width: 100%; justify-content: stretch; }
-  .nav-btn { flex: 1; text-align: center; font-size: 11px; padding: 7px 6px; }
+  /* GLOBAL — previne overflow horizontal */
+  html, body { overflow-x: hidden; }
+  * { max-width: 100%; }
+  img, canvas, svg { height: auto; }
 
-  /* KPIs mobile */
-  .kpis-section { grid-template-columns: 1fr 1fr; margin: 12px 16px 0; }
-  .kpi-card { border-right: none; border-bottom: 1px solid var(--border); padding: 12px 14px; }
+  /* HEADER — logo centralizado, nav abaixo */
+  header {
+    padding: 10px 12px 8px;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .logo-text { text-align: center; }
+  .header-sub { display: none; }
+  .header-nav {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    gap: 3px;
+  }
+  .nav-btn {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    padding: 7px 4px;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* KPIs — grade 2×2 */
+  .kpis-section {
+    grid-template-columns: 1fr 1fr;
+    margin: 10px 12px 0;
+    width: calc(100% - 24px);
+    border-radius: 10px;
+  }
+  .kpi-card { border-right: none; border-bottom: 1px solid var(--border); padding: 11px 12px; }
   .kpi-card:nth-child(odd) { border-right: 1px solid var(--border); }
   .kpi-card:last-child { border-bottom: none; }
-  .kpi-value { font-size: 20px; }
-  .kpi-title { font-size: 9px; margin-bottom: 6px; }
-  .kpi-sub { font-size: 10px; }
-
-  /* Dashboard row: empilha no mobile */
-  .dashboard-row { grid-template-columns: 1fr; padding: 16px; gap: 14px; }
-  .chart-panel { grid-column: 1; }
+  .kpi-value { font-size: 18px; letter-spacing: -0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .kpi-title { font-size: 9px; margin-bottom: 5px; }
+  .kpi-sub { font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* CULTURE BAR */
   .culture-bar { padding: 7px 10px; }
   .culture-bar-label { display: none; }
 
-  /* MAIN GRID → vertical stack */
+  /* MAIN GRID → coluna única */
   .main {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto auto;
     height: auto;
-    min-height: calc(100vh - 90px);
+    width: 100%;
+    overflow-x: hidden;
   }
 
-  /* MAP: fixed height on mobile */
+  /* MAP */
   .map-panel {
     border-right: none;
     border-bottom: 1px solid var(--border);
     height: 52vw;
-    min-height: 220px;
-    max-height: 340px;
+    min-height: 200px;
+    max-height: 320px;
   }
 
-  /* TIMELINE PANEL */
-  .timeline-panel {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+  /* TIMELINE */
+  .timeline-panel { border-right: none; border-bottom: 1px solid var(--border); }
   .timeline-section { padding: 10px 12px 8px; overflow-x: auto; }
   .timeline-grid {
     grid-template-columns: 108px repeat(12, minmax(18px, 1fr));
     min-width: 480px;
   }
 
-  /* CARDS PANEL */
+  /* CARDS */
   .cards-panel { min-height: 300px; }
   .detail-cards { padding: 10px 12px; }
   .detail-card-header { padding: 12px 14px; }
   .detail-card-name { font-size: 14px; }
 
   /* FULL PANELS */
-  .full-panel { height: auto; min-height: calc(100vh - 90px); }
+  .full-panel { height: auto; overflow-x: hidden; }
   .fp-inner { grid-template-columns: 1fr; }
   .fp-left { padding: 20px 16px; border-right: none; border-bottom: 1px solid var(--border); }
   .fp-right { padding: 20px 16px; }
   .fp-title { font-size: 17px; }
-  .fp-left select, .fp-left input { font-size: 16px; } /* prevent iOS zoom */
+  .fp-left select, .fp-left input { font-size: 16px; }
 
   /* COMPARATIVO */
   .comp-header { padding: 16px 16px 0; }
@@ -1518,14 +1542,20 @@ a.kpi-link:hover { background: rgba(184,92,26,0.06); }
   .comp-tabs::-webkit-scrollbar { display: none; }
   .comp-tab { font-size: 11px; padding: 6px 10px; white-space: nowrap; flex-shrink: 0; }
 
-  /* CALC RESULTS */
+  /* CALC */
   .calc-product-row { grid-template-columns: 1fr auto; gap: 8px; }
   .calc-total-box { margin: 12px 0; }
 
-  /* DASHBOARD widgets */
-  .dashboard-row { padding: 12px 16px 16px; gap: 10px; }
-  .alert-card { padding: 14px 16px; border-radius: 10px; }
-  .weather-card-wrap { border-radius: 10px; overflow: hidden; }
-  .wx-scene { height: 160px; }
-  .news-feed { max-height: 280px; }
+  /* DASHBOARD — gráfico + clima + notícias */
+  .dashboard-row {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 10px;
+    width: 100%;
+  }
+  .chart-panel { grid-column: 1; width: 100%; }
+  .alert-card { padding: 14px 16px; border-radius: 10px; width: 100%; }
+  .weather-card-wrap { border-radius: 10px; overflow: hidden; width: 100%; }
+  .wx-scene { height: 55vw; max-height: 220px; }
+  .news-feed { max-height: 260px; }
 }
