@@ -1154,7 +1154,7 @@ a.kpi-link:hover { background: rgba(184,92,26,0.06); }
 .wx-scene {
   position: relative;
   width: 100%;
-  height: 202px;
+  height: 280px;
   overflow: hidden;
   flex-shrink: 0;
   transition: background 0s;
@@ -1556,6 +1556,6 @@ a.kpi-link:hover { background: rgba(184,92,26,0.06); }
   .chart-panel { grid-column: 1; width: 100%; }
   .alert-card { padding: 14px 16px; border-radius: 10px; width: 100%; }
   .weather-card-wrap { border-radius: 10px; overflow: hidden; width: 100%; }
-  .wx-scene { height: 55vw; max-height: 220px; }
+  .wx-scene { height: 60vw; max-height: 280px; }
   .news-feed { max-height: 260px; }
 }
