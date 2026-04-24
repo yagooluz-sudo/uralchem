@@ -72,16 +72,11 @@ header {
   box-shadow: 0 1px 0 rgba(184,92,26,0.08), 0 4px 20px rgba(90,60,20,0.06);
 }
 
-.logo {
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 900;
-  font-size: 22px;
-  font-style: italic;
-  letter-spacing: -0.5px;
-  color: var(--accent);
+.logo-img {
+  height: 36px;
+  width: auto;
+  display: block;
 }
-
-.logo span { color: var(--text); font-weight: 500; }
 
 .header-sub {
   font-size: 11px;
