@@ -118,7 +118,7 @@ const CULTURES = {
   },
   arroz: {
     name: 'Arroz',
-    icon: '🌾',
+    icon: '🍚',
     color: 'var(--arroz)',
     colorHex: '#5a7a3a',
     dimColor: 'var(--arroz-dim)',
