@@ -1177,6 +1177,8 @@ a.kpi-link:hover { background: rgba(184,92,26,0.06); }
 .wx-scene.wx-night-rainy  { background: url('../scene-night-rainy.jpg') center/cover no-repeat; }
 .wx-scene.wx-night-storm  { background: url('../scene-night-storm.jpg') center/cover no-repeat; }
 
+.wx-scene.wx-unavailable { background: #1a1a2e; }
+
 /* Hide animated sky elements — photos provide sun/moon/stars/clouds */
 .wx-sun, .wx-moon, .wx-stars, .wx-cloud { display: none !important; }
 

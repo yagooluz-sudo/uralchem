@@ -1102,7 +1102,8 @@ function loadWeatherByCity() {
     .catch(() => {
       document.getElementById('wxDesc').textContent  = '⚠️ Indisponível';
       document.getElementById('wxAgroTip').innerHTML = 'Verifique a conexão ou tente outra cidade.';
-      applyWxScene('Clear', new Date().getHours());
+      const scene = document.getElementById('wxScene');
+      if (scene) scene.className = 'wx-scene wx-unavailable';
     });
 }
 
