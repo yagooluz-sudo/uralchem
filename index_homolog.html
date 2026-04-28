@@ -1,0 +1,664 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroMapa — Sobre Culturas Brasileiras</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="logo-text"><span class="logo-agro">Agro</span><span class="logo-mapa">mapa</span></div>
+  <div class="header-sub">Sobre Culturas Brasileiras</div>
+  <nav class="header-nav">
+    <button class="nav-btn active" onclick="showView('mapa')">🗺 Mapa</button>
+    <button class="nav-btn" onclick="showView('calculadora')">🧮 Calculadora</button>
+    <button class="nav-btn" onclick="showView('comparativo')">⚖️ Comparativo</button>
+    <button class="nav-btn" onclick="showView('produtos')">🧪 Produtos</button>
+  </nav>
+</header>
+
+<!-- KPIs SECTION -->
+<div class="kpis-section">
+  <a class="kpi-card kpi-link" href="https://www.conab.gov.br/info-agro/safras" target="_blank" title="Ver dados CONAB">
+    <div class="kpi-title">Área Plantada — Grãos</div>
+    <div class="kpi-value">~82 Mi ha</div>
+    <div class="kpi-sub">Brasil · Safra 2025/26 · <span class="kpi-source">CONAB ↗</span></div>
+  </a>
+  <a class="kpi-card kpi-link" href="https://indicadores.agricultura.gov.br/agrostat/index.htm" target="_blank" title="Ver dados AgroStat/MAPA">
+    <div class="kpi-title">Exportações do Agronegócio</div>
+    <div class="kpi-value">US$ 173 bi</div>
+    <div class="kpi-sub">Projeção 2025 · novo recorde · <span class="kpi-source">MAPA ↗</span></div>
+  </a>
+  <div class="kpi-card" id="kpi-cotacao-card">
+    <div class="kpi-title">Cotação — <span id="cotacao-nome">Soja</span> <span id="cotacao-icon">🌱</span></div>
+    <div class="kpi-value" id="kpi-preco">Carregando...</div>
+    <div class="kpi-sub" style="display:flex;align-items:center;gap:6px">
+      <span id="cotacao-unidade">sc 60kg · ref.</span>
+      <a id="cotacao-link" href="https://www.cepea.esalq.usp.br/br/indicador/soja.aspx" target="_blank"
+         style="margin-left:auto;color:var(--accent);font-size:10px;font-weight:600;text-decoration:none;white-space:nowrap">CEPEA ↗</a>
+    </div>
+    <div style="height:2px;background:var(--border);border-radius:1px;margin-top:10px;overflow:hidden">
+      <div id="cotacao-progress" style="height:100%;background:var(--accent);width:100%;transition:none"></div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-title">Câmbio USD / BRL</div>
+    <div class="kpi-value" id="kpi-dolar-val">Carregando...</div>
+    <div class="kpi-sub" id="kpi-dolar-sub">Taxa de câmbio ao vivo · <span class="kpi-source">Awesome API</span></div>
+  </div>
+</div>
+
+<!-- DASHBOARD ROW: gráfico + clima + notícias lado a lado -->
+<div class="dashboard-row">
+
+  <!-- Gráfico -->
+  <div class="chart-panel">
+    <div class="chart-section-title">Produtividade Média por Cultura</div>
+    <div class="chart-section-sub">Estimativa 2025/26 · t/ha · Fonte: CONAB. Cana em massa fresca; demais em grãos secos.</div>
+    <canvas id="produtividadeChart" style="max-height:220px"></canvas>
+    <div class="chart-insight">
+      <strong>Cana</strong> lidera em volume bruto — SP, GO, MS · <strong>Citros</strong> com alta produtividade em SP e MG · <strong>Soja e milho</strong> dominam em área no Centro-Oeste e MATOPIBA · <strong>Café</strong> concentrado em MG, ES e SP, com maior valor por tonelada
+    </div>
+  </div>
+
+  <!-- Clima -->
+  <div class="alert-card weather-card-wrap">
+
+    <!-- Samsung-style scene -->
+    <div class="wx-scene wx-sunny" id="wxScene">
+      <div class="wx-stars" id="wxStars"></div>
+      <div class="wx-sun" id="wxSun"></div>
+      <div class="wx-moon" id="wxMoon"></div>
+      <div class="wx-cloud wx-cloud-a" id="wxCloudA"></div>
+      <div class="wx-cloud wx-cloud-b" id="wxCloudB"></div>
+      <div class="wx-rain" id="wxRain"></div>
+      <!-- Plantation landscape — full colour illustration -->
+      <svg class="wx-landscape" viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hg1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="rgb(165,215,100)" stop-opacity="0"/>
+            <stop offset="32%"  stop-color="rgb(148,198,82)"  stop-opacity="0.50"/>
+            <stop offset="100%" stop-color="rgb(128,178,62)"  stop-opacity="0.72"/>
+          </linearGradient>
+          <linearGradient id="hg2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="rgb(105,172,48)"  stop-opacity="0"/>
+            <stop offset="18%"  stop-color="rgb(92,158,38)"   stop-opacity="0.62"/>
+            <stop offset="100%" stop-color="rgb(78,140,28)"   stop-opacity="0.90"/>
+          </linearGradient>
+          <linearGradient id="fldG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#62bc38"/>
+            <stop offset="55%"  stop-color="#4ea028"/>
+            <stop offset="100%" stop-color="#3a7e18"/>
+          </linearGradient>
+          <!-- Corn plant — full colour (origin at base) -->
+          <g id="corn">
+            <line x1="0" y1="0" x2="0" y2="-40" stroke="#2a7010" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M0,-40 Q-2,-47 -3,-45" stroke="#8aaa22" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M0,-40 Q2,-47  3,-45"  stroke="#8aaa22" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M0,-40 Q0,-49  0,-46"  stroke="#8aaa22" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M0,-32 Q-20,-38 -26,-32 Q-17,-27 0,-32Z" fill="#3ea020"/>
+            <path d="M0,-32 Q20,-38  26,-32 Q17,-27 0,-32Z"  fill="#3ea020"/>
+            <path d="M0,-21 Q-22,-26 -28,-19 Q-18,-15 0,-21Z" fill="#389818"/>
+            <path d="M0,-21 Q22,-26  28,-19 Q18,-15 0,-21Z"  fill="#389818"/>
+            <path d="M0,-10 Q-17,-12 -21,-8  Q-14,-5  0,-10Z" fill="#309010"/>
+            <path d="M0,-10 Q17,-12  21,-8  Q14,-5  0,-10Z"  fill="#309010"/>
+          </g>
+        </defs>
+
+        <!-- Distant hills -->
+        <path d="M0 46 Q30 28 65 42 Q100 22 140 40 Q178 26 218 42 Q256 24 296 40 Q332 28 368 38 Q385 34 400 36 L400 90 L0 90Z" fill="url(#hg1)"/>
+        <!-- Mid hills -->
+        <path d="M0 58 Q50 44 105 56 Q160 42 215 55 Q270 43 330 55 Q365 47 400 52 L400 90 L0 90Z" fill="url(#hg2)"/>
+
+        <!-- Barn (barn-red) -->
+        <rect x="18" y="50" width="22" height="20" rx="1" fill="#7a1e1e"/>
+        <path d="M17 50 L29 39 L41 50Z" fill="#5e1414"/>
+        <rect x="24" y="58" width="9" height="12" rx="1" fill="#5e1414"/>
+        <rect x="20" y="53" width="5" height="4" rx="0.5" fill="rgba(255,220,140,0.40)"/>
+        <!-- Silo -->
+        <rect x="42" y="44" width="11" height="26" rx="2" fill="#c8b470"/>
+        <path d="M41 44 Q47.5 35 54 44Z" fill="#b09848"/>
+        <line x1="41" y1="52" x2="53" y2="52" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
+        <line x1="41" y1="58" x2="53" y2="58" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
+        <line x1="41" y1="64" x2="53" y2="64" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
+
+        <!-- Foreground field -->
+        <path d="M0 68 Q80 61 170 67 Q268 59 368 65 L400 64 L400 90 L0 90Z" fill="url(#fldG)"/>
+        <path d="M0 68 Q80 61 170 67 Q268 59 368 65 L400 64 L400 70 Q368 67 268 65 Q170 71 80 67 L0 72Z" fill="rgba(100,200,55,0.18)"/>
+
+        <!-- Dirt track -->
+        <path d="M158 68 L128 90 L178 90 L168 68Z" fill="rgba(175,145,75,0.32)"/>
+
+        <!-- Crop rows -->
+        <g stroke="rgba(18,68,5,0.14)" stroke-width="0.6" fill="none">
+          <line x1="163" y1="68" x2="0"   y2="90"/><line x1="163" y1="68" x2="48"  y2="90"/>
+          <line x1="163" y1="68" x2="100" y2="90"/><line x1="163" y1="68" x2="150" y2="90"/>
+          <line x1="163" y1="68" x2="190" y2="90"/><line x1="163" y1="68" x2="245" y2="90"/>
+        </g>
+        <line x1="0" y1="72" x2="400" y2="72.5" stroke="rgba(18,68,5,0.10)" stroke-width="0.5"/>
+        <line x1="0" y1="77" x2="400" y2="77.5" stroke="rgba(18,68,5,0.08)" stroke-width="0.5"/>
+        <line x1="0" y1="82" x2="400" y2="82"   stroke="rgba(18,68,5,0.06)" stroke-width="0.5"/>
+
+        <!-- TRACTOR — John Deere green (#367C2B) -->
+        <!-- Rear wheel -->
+        <circle cx="178" cy="77" r="13" fill="#1c1c1c"/>
+        <circle cx="178" cy="77" r="9.5" fill="#252525"/>
+        <circle cx="178" cy="77" r="3.5" fill="#303030"/>
+        <g stroke="#2e2e2e" stroke-width="1.3">
+          <line x1="178" y1="64" x2="178" y2="90"/>
+          <line x1="165" y1="77" x2="191" y2="77"/>
+          <line x1="169" y1="68" x2="187" y2="86"/>
+          <line x1="187" y1="68" x2="169" y2="86"/>
+        </g>
+        <!-- Front wheel -->
+        <circle cx="212" cy="80" r="8.5" fill="#1c1c1c"/>
+        <circle cx="212" cy="80" r="5.5" fill="#252525"/>
+        <circle cx="212" cy="80" r="2"   fill="#303030"/>
+        <!-- Chassis green -->
+        <rect x="176" y="65" width="38" height="13" rx="1" fill="#367C2B"/>
+        <!-- Hood (darker green, slopes to front) -->
+        <path d="M197 65 L222 65 L220 57 L199 57Z" fill="#2d6824"/>
+        <g stroke="#245420" stroke-width="0.9">
+          <line x1="203" y1="58" x2="202" y2="64"/>
+          <line x1="209" y1="58" x2="208" y2="64"/>
+          <line x1="215" y1="58.5" x2="214" y2="64"/>
+        </g>
+        <!-- Headlight -->
+        <ellipse cx="220" cy="62" rx="2.2" ry="1.8" fill="#ffe870"/>
+        <ellipse cx="220" cy="62" rx="1.2" ry="1"   fill="#fff4a0"/>
+        <!-- Cab (JD green) -->
+        <rect x="165" y="49" width="26" height="17" rx="2" fill="#367C2B"/>
+        <!-- Front window -->
+        <rect x="168" y="52" width="15" height="11" rx="1" fill="rgba(190,230,255,0.42)"/>
+        <!-- Rear glass -->
+        <rect x="184" y="52" width="5"  height="11" rx="0.5" fill="rgba(190,230,255,0.25)"/>
+        <!-- Cab roof -->
+        <rect x="164" y="47" width="28" height="3.5" rx="1.5" fill="#2d6824"/>
+        <!-- Exhaust -->
+        <rect x="167" y="38" width="4.5" height="11" rx="2.2" fill="#1a1a1a"/>
+        <circle cx="169" cy="36" r="3.8" fill="rgba(100,100,100,0.22)"/>
+        <circle cx="171" cy="31" r="3"   fill="rgba(100,100,100,0.14)"/>
+        <circle cx="168" cy="27" r="2.2" fill="rgba(100,100,100,0.08)"/>
+        <!-- Hitch -->
+        <rect x="161" y="72" width="14" height="3.5" rx="1.5" fill="#2d6824"/>
+        <circle cx="161" cy="73.5" r="2.8" fill="#245420"/>
+
+        <!-- CORN FIELD — right side, 2 depth rows -->
+        <use href="#corn" transform="translate(284,83) scale(0.70)"/>
+        <use href="#corn" transform="translate(296,83) scale(0.73)"/>
+        <use href="#corn" transform="translate(308,83) scale(0.70)"/>
+        <use href="#corn" transform="translate(320,83) scale(0.74)"/>
+        <use href="#corn" transform="translate(332,83) scale(0.71)"/>
+        <use href="#corn" transform="translate(344,83) scale(0.73)"/>
+        <use href="#corn" transform="translate(356,83) scale(0.70)"/>
+        <use href="#corn" transform="translate(368,83) scale(0.72)"/>
+        <use href="#corn" transform="translate(380,83) scale(0.74)"/>
+        <use href="#corn" transform="translate(392,83) scale(0.71)"/>
+        <use href="#corn" transform="translate(280,90) scale(1.00)"/>
+        <use href="#corn" transform="translate(292,90) scale(1.06)"/>
+        <use href="#corn" transform="translate(304,90) scale(0.97)"/>
+        <use href="#corn" transform="translate(316,90) scale(1.04)"/>
+        <use href="#corn" transform="translate(328,90) scale(1.09)"/>
+        <use href="#corn" transform="translate(340,90) scale(0.96)"/>
+        <use href="#corn" transform="translate(352,90) scale(1.03)"/>
+        <use href="#corn" transform="translate(364,90) scale(0.98)"/>
+        <use href="#corn" transform="translate(376,90) scale(1.05)"/>
+        <use href="#corn" transform="translate(388,90) scale(0.94)"/>
+        <use href="#corn" transform="translate(400,90) scale(1.02)"/>
+      </svg>
+      <div class="wx-overlay">
+        <div class="wx-city-name">📍 <span id="wxCity">--</span></div>
+        <div class="wx-big-temp" id="wxTemp">--°</div>
+        <div class="wx-desc-line" id="wxDesc">--</div>
+        <div class="wx-hilow" id="wxHiLow">↑--° ↓--° &nbsp;·&nbsp; Sensação --°</div>
+      </div>
+    </div>
+
+    <!-- Body: search + hourly + agro -->
+    <div class="wx-body">
+      <!-- Search -->
+      <div>
+        <input
+          type="text"
+          id="city-input"
+          list="cities-datalist"
+          placeholder="Ibaté - SP"
+          autocomplete="off"
+          class="wx-search"
+          onchange="loadWeatherByCity()"
+          onkeydown="if(event.key==='Enter')loadWeatherByCity()"
+        >
+      <datalist id="cities-datalist">
+        <option value="Rio Branco - AC">
+        <option value="Cruzeiro do Sul - AC">
+        <option value="Maceió - AL">
+        <option value="Arapiraca - AL">
+        <option value="Macapá - AP">
+        <option value="Santana - AP">
+        <option value="Manaus - AM">
+        <option value="Parintins - AM">
+        <option value="Itacoatiara - AM">
+        <option value="Salvador - BA">
+        <option value="Feira de Santana - BA">
+        <option value="Vitória da Conquista - BA">
+        <option value="Ilhéus - BA">
+        <option value="Juazeiro - BA">
+        <option value="Barreiras - BA">
+        <option value="Luís Eduardo Magalhães - BA">
+        <option value="Fortaleza - CE">
+        <option value="Juazeiro do Norte - CE">
+        <option value="Sobral - CE">
+        <option value="Iguatu - CE">
+        <option value="Brasília - DF">
+        <option value="Vitória - ES">
+        <option value="Cachoeiro de Itapemirim - ES">
+        <option value="Linhares - ES">
+        <option value="Goiânia - GO">
+        <option value="Anápolis - GO">
+        <option value="Rio Verde - GO">
+        <option value="Jataí - GO">
+        <option value="Catalão - GO">
+        <option value="Itumbiara - GO">
+        <option value="São Luís - MA">
+        <option value="Imperatriz - MA">
+        <option value="Caxias - MA">
+        <option value="Balsas - MA">
+        <option value="Cuiabá - MT">
+        <option value="Sinop - MT">
+        <option value="Rondonópolis - MT">
+        <option value="Sorriso - MT">
+        <option value="Lucas do Rio Verde - MT">
+        <option value="Alta Floresta - MT">
+        <option value="Nova Mutum - MT">
+        <option value="Campo Novo do Parecis - MT">
+        <option value="Tangará da Serra - MT">
+        <option value="Primavera do Leste - MT">
+        <option value="Campo Grande - MS">
+        <option value="Dourados - MS">
+        <option value="Três Lagoas - MS">
+        <option value="Naviraí - MS">
+        <option value="Maracaju - MS">
+        <option value="Belo Horizonte - MG">
+        <option value="Uberlândia - MG">
+        <option value="Uberaba - MG">
+        <option value="Montes Claros - MG">
+        <option value="Patos de Minas - MG">
+        <option value="Juiz de Fora - MG">
+        <option value="Araxá - MG">
+        <option value="Paracatu - MG">
+        <option value="Frutal - MG">
+        <option value="Passos - MG">
+        <option value="Belém - PA">
+        <option value="Santarém - PA">
+        <option value="Marabá - PA">
+        <option value="Redenção - PA">
+        <option value="João Pessoa - PB">
+        <option value="Campina Grande - PB">
+        <option value="Curitiba - PR">
+        <option value="Londrina - PR">
+        <option value="Maringá - PR">
+        <option value="Cascavel - PR">
+        <option value="Ponta Grossa - PR">
+        <option value="Toledo - PR">
+        <option value="Francisco Beltrão - PR">
+        <option value="Guarapuava - PR">
+        <option value="Recife - PE">
+        <option value="Caruaru - PE">
+        <option value="Petrolina - PE">
+        <option value="Teresina - PI">
+        <option value="Bom Jesus - PI">
+        <option value="Uruçuí - PI">
+        <option value="Rio de Janeiro - RJ">
+        <option value="Campos dos Goytacazes - RJ">
+        <option value="Natal - RN">
+        <option value="Mossoró - RN">
+        <option value="Porto Alegre - RS">
+        <option value="Caxias do Sul - RS">
+        <option value="Passo Fundo - RS">
+        <option value="Santa Rosa - RS">
+        <option value="Cruz Alta - RS">
+        <option value="Ijuí - RS">
+        <option value="Pelotas - RS">
+        <option value="Porto Velho - RO">
+        <option value="Ji-Paraná - RO">
+        <option value="Boa Vista - RR">
+        <option value="Florianópolis - SC">
+        <option value="Chapecó - SC">
+        <option value="Lages - SC">
+        <option value="Caçador - SC">
+        <option value="Joinville - SC">
+        <option value="Ibaté - SP">
+        <option value="São Paulo - SP">
+        <option value="Ribeirão Preto - SP">
+        <option value="Campinas - SP">
+        <option value="Bauru - SP">
+        <option value="Araçatuba - SP">
+        <option value="Assis - SP">
+        <option value="Marília - SP">
+        <option value="Presidente Prudente - SP">
+        <option value="São José do Rio Preto - SP">
+        <option value="Piracicaba - SP">
+        <option value="Sorocaba - SP">
+        <option value="Araraquara - SP">
+        <option value="Aracaju - SE">
+        <option value="Palmas - TO">
+        <option value="Gurupi - TO">
+        <option value="Araguaína - TO">
+      </datalist>
+      </div>
+
+      <!-- Hourly -->
+      <div class="wx-hourly" id="wxHourly">
+        <div class="wx-loading">Carregando previsão...</div>
+      </div>
+
+      <!-- 5-day forecast -->
+      <div class="wx-daily" id="wxDaily"></div>
+
+      <!-- Agro tip -->
+      <div class="wx-agro-tip" id="wxAgroTip">Aguardando dados climáticos...</div>
+
+      <!-- Agro metrics grid -->
+      <div class="wx-metrics" id="wxMetrics"></div>
+    </div>
+  </div>
+
+  <!-- Notícias -->
+  <div class="alert-card">
+    <div class="alert-title">📰 Últimas do Agro</div>
+    <div class="news-feed" id="news-feed">
+      <div class="alert-content">Carregando notícias...</div>
+    </div>
+    <div class="news-portais">
+      <a class="news-portal-link" href="https://noticiasagricolas.com.br" target="_blank">Notícias Agrícolas ↗</a>
+      <a class="news-portal-link" href="https://www.canalrural.com.br" target="_blank">Canal Rural ↗</a>
+      <a class="news-portal-link" href="https://globorural.globo.com" target="_blank">Globo Rural ↗</a>
+      <a class="news-portal-link" href="https://www.reuters.com/markets/commodities/" target="_blank">Reuters ↗</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- PRODUTOS PANEL -->
+<div id="view-produtos" class="full-panel" style="display:none">
+  <div class="produtos-header">
+    <div class="fp-title">Catálogo de Produtos</div>
+    <div class="fp-sub">Portfólio Adubos Vera Cruz — doses, indicações e diferenciais técnicos</div>
+    <div class="produtos-filter-bar" id="prodFilterBar">
+      <button class="prod-filter-btn active" onclick="filterProdutos('todos',this)">Todos</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('N',this)">Nitrogenados</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('P',this)">Fosfatados</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('K',this)">Potássicos</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('NPK',this)">Compostos NPK</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('micro',this)">Micronutrientes</button>
+      <button class="prod-filter-btn" onclick="filterProdutos('calcario',this)">Calcário</button>
+    </div>
+  </div>
+  <div class="produtos-body">
+    <div class="produtos-grid" id="produtosGrid"></div>
+  </div>
+</div>
+
+<!-- CALCULADORA PANEL -->
+<div id="view-calculadora" class="full-panel" style="display:none">
+  <div class="fp-inner">
+    <div class="fp-left">
+      <div class="fp-title">Calculadora de Dose × Área</div>
+      <div class="fp-sub">Informe a cultura, área e estágio — calcule quanto de cada produto o cliente precisa comprar.</div>
+
+      <div class="field-group">
+        <label class="field-label">Cultura</label>
+        <select id="calc-cultura" onchange="calcUpdate()">
+          <option value="">Selecione...</option>
+          <option value="soja">🌱 Soja</option>
+          <option value="milho">🌽 Milho</option>
+          <option value="cafe">☕ Café</option>
+          <option value="cana">🎋 Cana-de-açúcar</option>
+          <option value="algodao">🌸 Algodão</option>
+          <option value="citros">🍊 Citros</option>
+          <option value="arroz">🍚 Arroz</option>
+          <option value="feijao">🫘 Feijão</option>
+          <option value="trigo">🌾 Trigo</option>
+          <option value="coco">🥥 Coco</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Área (hectares)</label>
+        <input type="number" id="calc-area" placeholder="ex: 500" min="1" oninput="calcUpdate()">
+      </div>
+
+      <div class="field-group" id="calc-estagio-wrap" style="display:none">
+        <label class="field-label">Momento de aplicação</label>
+        <select id="calc-estagio" onchange="calcUpdate()">
+        </select>
+      </div>
+
+      <div class="personal-form">
+        <div class="field-group">
+          <label class="field-label">Tipo de Solo</label>
+          <select id="calc-solo">
+            <option value="arenoso">Arenoso</option>
+            <option value="argiloso">Argiloso</option>
+            <option value="misto">Misto</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Produtividade Esperada (t/ha)</label>
+          <input type="number" id="calc-prod-esperada" placeholder="ex: 4.5" min="0" step="0.1">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Histórico de Produtividade (t/ha)</label>
+          <input type="number" id="calc-prod-historico" placeholder="ex: 4.0" min="0" step="0.1">
+        </div>
+        <button onclick="calcPersonalizado()" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;">Calcular Personalizado</button>
+      </div>
+
+      <div class="calc-hint" id="calc-hint" style="display:none"></div>
+    </div>
+
+    <div class="fp-right">
+      <div class="fp-title" style="font-size:13px;margin-bottom:14px">Pedido estimado</div>
+      <div id="calc-results" class="calc-results-empty">
+        <span style="color:var(--muted);font-size:13px">Preencha os campos</span>
+      </div>
+      <div id="calc-total-box" style="display:none" class="calc-total-box">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Total de produtos</div>
+        <div id="calc-total-ton" style="font-size:28px;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;color:var(--accent)"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px" id="calc-total-sub"></div>
+      </div>
+      <div id="calc-pitch" class="calc-pitch" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARATIVO PANEL -->
+<div id="view-comparativo" class="full-panel" style="display:none">
+  <div class="comp-header">
+    <div class="fp-title">Comparativo Técnico de Produtos</div>
+    <div class="fp-sub">Argumentos prontos para uso em campo. Selecione o comparativo desejado.</div>
+    <div class="comp-tabs">
+      <button class="comp-tab active" onclick="showComp('nitrato')">Nitrato NH₄ 34% vs Ureia</button>
+      <button class="comp-tab" onclick="showComp('map')">MAP/NP vs SSP</button>
+      <button class="comp-tab" onclick="showComp('kcl')">KCl 60% vs KCl 62%</button>
+      <button class="comp-tab" onclick="showComp('nks')">NKS 13-00-44 vs KCl+Ureia</button>
+      <button class="comp-tab" onclick="showComp('boro')">Borogran 10% vs Boro 4%</button>
+    </div>
+  </div>
+  <div class="comp-body" id="comp-body"></div>
+</div>
+
+<div id="tooltip">
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-cultures" id="tt-cultures"></div>
+</div>
+
+<div class="main">
+  <!-- CULTURE FILTER BAR -->
+  <div class="culture-bar">
+    <span class="culture-bar-label">Filtrar por cultura</span>
+    <button class="culture-btn" data-culture="soja" onclick="toggleCulture('soja')">
+      <span class="dot" style="background:var(--soja)"></span> Soja
+    </button>
+    <button class="culture-btn" data-culture="milho" onclick="toggleCulture('milho')">
+      <span class="dot" style="background:var(--milho)"></span> Milho
+    </button>
+    <button class="culture-btn" data-culture="cafe" onclick="toggleCulture('cafe')">
+      <span class="dot" style="background:var(--cafe)"></span> Café
+    </button>
+    <button class="culture-btn" data-culture="cana" onclick="toggleCulture('cana')">
+      <span class="dot" style="background:var(--cana)"></span> Cana
+    </button>
+    <button class="culture-btn" data-culture="algodao" onclick="toggleCulture('algodao')">
+      <span class="dot" style="background:var(--algodao)"></span> Algodão
+    </button>
+    <button class="culture-btn" data-culture="citros" onclick="toggleCulture('citros')">
+      <span class="dot" style="background:var(--citros)"></span> Citros
+    </button>
+    <button class="culture-btn" data-culture="arroz" onclick="toggleCulture('arroz')">
+      <span class="dot" style="background:var(--arroz)"></span> Arroz
+    </button>
+    <button class="culture-btn" data-culture="feijao" onclick="toggleCulture('feijao')">
+      <span class="dot" style="background:var(--feijao)"></span> Feijão
+    </button>
+    <button class="culture-btn" data-culture="trigo" onclick="toggleCulture('trigo')">
+      <span class="dot" style="background:var(--trigo)"></span> Trigo
+    </button>
+    <button class="culture-btn" data-culture="coco" onclick="toggleCulture('coco')">
+      <span class="dot" style="background:var(--coco)"></span> Coco
+    </button>
+    <span class="culture-bar-label" style="margin-left:20px">Estação</span>
+    <button class="culture-btn" data-season="seca" onclick="filterBySeason('seca')">🌞 Seca</button>
+    <button class="culture-btn" data-season="chuva" onclick="filterBySeason('chuva')">🌧️ Chuva</button>
+    <button class="clear-btn" onclick="clearAll()">Limpar filtros</button>
+  </div>
+
+  <!-- MAP PANEL: col 1 -->
+  <div class="map-panel" id="mapPanel">
+    <svg id="brazil-svg" viewBox="0 0 800 820" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <!-- RR -->
+      <path class="state-path" data-state="RR" d="M195,35 L270,30 L305,60 L310,110 L280,145 L240,150 L200,130 L175,90 Z"/>
+      <!-- AP -->
+      <path class="state-path" data-state="AP" d="M315,30 L365,25 L380,60 L360,90 L330,95 L310,75 L310,45 Z"/>
+      <!-- AM -->
+      <path class="state-path" data-state="AM" d="M115,130 L200,125 L240,148 L280,145 L310,110 L330,95 L360,90 L380,130 L395,175 L380,220 L340,250 L300,270 L255,290 L220,310 L185,295 L155,270 L135,235 L110,200 L95,165 Z"/>
+      <!-- PA -->
+      <path class="state-path" data-state="PA" d="M310,110 L380,130 L395,175 L430,175 L465,160 L500,170 L520,200 L510,235 L480,260 L450,280 L415,285 L380,270 L340,250 L300,270 L255,290 L235,265 L260,240 L280,215 L290,185 L280,145 Z"/>
+      <!-- MA -->
+      <path class="state-path" data-state="MA" d="M465,160 L510,155 L545,165 L560,195 L555,225 L525,245 L500,255 L480,260 L510,235 L520,200 L500,170 Z"/>
+      <!-- PI -->
+      <path class="state-path" data-state="PI" d="M545,165 L590,160 L615,185 L610,220 L590,245 L570,255 L555,225 L560,195 Z"/>
+      <!-- CE -->
+      <path class="state-path" data-state="CE" d="M590,160 L640,155 L665,175 L660,200 L635,215 L615,185 Z"/>
+      <!-- RN -->
+      <path class="state-path" data-state="RN" d="M640,155 L680,155 L695,175 L680,195 L660,200 L665,175 Z"/>
+      <!-- PB -->
+      <path class="state-path" data-state="PB" d="M665,195 L700,190 L715,205 L700,220 L675,218 L660,200 Z"/>
+      <!-- PE -->
+      <path class="state-path" data-state="PE" d="M620,210 L660,200 L700,220 L715,235 L695,250 L655,255 L625,245 L610,225 Z"/>
+      <!-- AL -->
+      <path class="state-path" data-state="AL" d="M675,248 L710,240 L720,255 L705,268 L680,265 Z"/>
+      <!-- SE -->
+      <path class="state-path" data-state="SE" d="M685,268 L710,262 L720,275 L705,285 L685,282 Z"/>
+      <!-- BA -->
+      <path class="state-path" data-state="BA" d="M525,245 L570,255 L590,245 L625,245 L655,255 L680,265 L705,285 L715,320 L700,365 L675,395 L640,415 L600,425 L560,420 L525,400 L500,370 L490,335 L495,300 L510,275 L500,255 Z"/>
+      <!-- TO -->
+      <path class="state-path" data-state="TO" d="M450,280 L480,260 L500,255 L510,275 L495,300 L490,335 L480,360 L460,375 L440,365 L425,340 L420,310 L430,285 Z"/>
+      <!-- GO -->
+      <path class="state-path" data-state="GO" d="M415,350 L440,340 L460,375 L480,380 L490,410 L475,440 L450,455 L420,455 L400,435 L385,405 L390,375 Z"/>
+      <!-- DF -->
+      <path class="state-path" data-state="DF" d="M440,400 L455,395 L460,410 L445,415 Z"/>
+      <!-- MG -->
+      <path class="state-path" data-state="MG" d="M490,335 L525,330 L560,335 L590,345 L615,370 L625,400 L615,435 L590,460 L555,475 L520,480 L490,465 L465,445 L450,455 L435,440 L450,415 L475,400 L490,375 L480,360 Z"/>
+      <!-- ES -->
+      <path class="state-path" data-state="ES" d="M615,390 L640,385 L650,410 L640,435 L615,440 L615,415 Z"/>
+      <!-- RJ -->
+      <path class="state-path" data-state="RJ" d="M575,460 L615,455 L630,475 L615,490 L585,488 L565,472 Z"/>
+      <!-- SP -->
+      <path class="state-path" data-state="SP" d="M465,455 L520,460 L555,475 L570,490 L565,515 L540,530 L505,535 L470,525 L445,505 L440,480 Z"/>
+      <!-- PR -->
+      <path class="state-path" data-state="PR" d="M440,510 L505,505 L540,520 L545,545 L520,565 L490,570 L455,555 L430,535 Z"/>
+      <!-- SC -->
+      <path class="state-path" data-state="SC" d="M450,555 L490,550 L520,565 L525,585 L500,598 L470,595 L448,578 Z"/>
+      <!-- RS -->
+      <path class="state-path" data-state="RS" d="M435,590 L470,580 L500,598 L525,610 L530,645 L510,680 L480,700 L450,700 L420,680 L405,650 L408,618 Z"/>
+      <!-- MS -->
+      <path class="state-path" data-state="MS" d="M380,430 L420,420 L450,430 L465,455 L455,485 L440,510 L410,520 L375,510 L355,485 L350,455 L360,435 Z"/>
+      <!-- MT -->
+      <path class="state-path" data-state="MT" d="M300,270 L340,250 L380,270 L415,285 L430,285 L440,340 L420,370 L415,400 L400,435 L385,440 L355,435 L330,415 L305,385 L285,350 L275,315 L280,285 Z"/>
+      <!-- RO -->
+      <path class="state-path" data-state="RO" d="M215,295 L255,290 L280,285 L275,315 L265,345 L240,360 L215,355 L200,330 L200,305 Z"/>
+      <!-- AC -->
+      <path class="state-path" data-state="AC" d="M115,295 L165,285 L200,305 L200,330 L175,345 L145,340 L120,320 Z"/>
+    </svg>
+  </div>
+
+  <!-- STATE HEADER + TIMELINE: col 2 -->
+  <div class="timeline-panel">
+    <div class="state-header" id="stateHeader">
+      <div class="state-name">
+        Brasil
+        <span class="sub">Clique em um estado para filtrar</span>
+      </div>
+    </div>
+    <div class="timeline-section">
+      <div class="state-cultures" id="stateCultures" style="margin-bottom:8px"></div>
+      <div class="section-title">Calendário de Safra</div>
+      <div class="timeline-grid" id="timelineGrid"></div>
+      <div class="legend-bar">
+        <div class="legend-item"><div class="legend-box" style="background:rgba(44,26,8,0.5)"></div> Plantio</div>
+        <div class="legend-item"><div class="legend-box" style="background:rgba(44,26,8,0.2)"></div> Colheita</div>
+        <div class="legend-item"><div class="legend-box" style="background:transparent;border:1px solid rgba(90,60,20,0.2)"></div> Entressafra</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL CARDS: col 3 -->
+  <div class="cards-panel">
+    <div class="cards-panel-header">
+      <div class="state-name">
+        Detalhes por Cultura
+        <span class="sub">Clique em uma cultura para descobrir mais</span>
+      </div>
+    </div>
+    <div class="detail-cards" id="detailCards"></div>
+  </div>
+</div>
+
+<footer style="
+  border-top: 1px solid rgba(90,60,20,0.12);
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 16px 40px;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.8;
+">
+  <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+    <div>
+      <span style="font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);display:block;margin-bottom:4px">Fontes dos dados</span>
+      <a href="https://www.conab.gov.br/info-agro/safras" target="_blank" style="color:var(--muted);text-decoration:none">CONAB — Safras e área plantada</a> ·
+      <a href="https://indicadores.agricultura.gov.br/agrostat/index.htm" target="_blank" style="color:var(--muted);text-decoration:none">MAPA / AgroStat — Exportações do agronegócio</a> ·
+      <a href="https://www.cepea.esalq.usp.br/br/indicador.aspx" target="_blank" style="color:var(--muted);text-decoration:none">CEPEA / ESALQ — Cotações de referência</a> ·
+      <a href="https://openweathermap.org" target="_blank" style="color:var(--muted);text-decoration:none">OpenWeatherMap — Dados climáticos</a> ·
+      <a href="https://news.google.com" target="_blank" style="color:var(--muted);text-decoration:none">Google News — Notícias</a> ·
+      <a href="https://docs.awesomeapi.com.br" target="_blank" style="color:var(--muted);text-decoration:none">Awesome API — Câmbio USD/BRL</a>
+    </div>
+    <div style="margin-left:auto;text-align:right;white-space:nowrap">
+      <span style="font-weight:600;color:var(--text)">AgroMapa</span> · Estimativas 2025/26 · Consulte fontes oficiais para decisões comerciais
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
